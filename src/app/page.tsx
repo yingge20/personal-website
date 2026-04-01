@@ -1,65 +1,243 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+
+type Variant = "a" | "b";
+
+export default function LandingPage() {
+  const router = useRouter();
+  const [variant, setVariant] = useState<Variant>("a");
+  const [nameColor, setNameColor] = useState<"cream" | "orange">("cream");
+  const [waving, setWaving] = useState(false);
+  const mantraRef = useRef<HTMLParagraphElement>(null);
+
+  function switchVariant(v: Variant, color: "cream" | "orange") {
+    setVariant(v);
+    setNameColor(color);
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div
+      className="fixed inset-0 flex items-center justify-center overflow-hidden"
+      style={{ background: "#0f2218", minHeight: "100vh" }}
+    >
+      {/* Water backgrounds */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          inset: "-8%",
+          backgroundImage: "url('/water.jpeg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          filter: "brightness(0.3) contrast(1.2) saturate(0.6)",
+          mixBlendMode: "luminosity",
+          opacity: 0.5,
+          animation: "water-move 20s ease-in-out infinite alternate",
+        }}
+      />
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          inset: "-10%",
+          backgroundImage: "url('/water.jpeg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          filter: "brightness(0.25) saturate(0.4)",
+          opacity: 0.25,
+          mixBlendMode: "screen",
+          animation: "water-move-2 15s ease-in-out infinite alternate",
+        }}
+      />
+
+      {/* Name */}
+      <h1
+        className="absolute font-display"
+        style={{
+          top: "8vh",
+          left: "2.5rem",
+          zIndex: 6,
+          fontWeight: 200,
+          fontSize: "clamp(6rem, 13vw, 14rem)",
+          letterSpacing: "-0.02em",
+          color: nameColor === "cream" ? "#F0EBE0" : "#E8653A",
+        }}
+      >
+        <em
+          className="not-italic"
+          style={{
+            fontStyle: "italic",
+            fontWeight: 200,
+            fontSize: "1.12em",
+            opacity: 0,
+            animation: "land-fade 1.2s 0.3s ease forwards",
+          }}
+        >
+          Ying
+        </em>{" "}
+        Ge
+      </h1>
+
+      {/* Window panel */}
+      <div
+        className="relative z-[4] flex flex-col items-center justify-center gap-10"
+        style={{
+          width: "72vw",
+          height: "64vh",
+          marginTop: "12vh",
+          opacity: 0,
+          animation: "land-fade 1.6s 0.2s ease forwards",
+          ...(variant === "a"
+            ? {
+                background: "rgba(18,38,28,0.65)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                boxShadow: "inset 0 0 120px rgba(255,255,255,0.02)",
+              }
+            : {
+                background: "rgba(245,242,236,0.88)",
+              }),
+        }}
+      >
+        <p
+          ref={mantraRef}
+          onMouseEnter={() => setWaving(true)}
+          onMouseLeave={() => setWaving(false)}
+          className="font-serif"
+          style={{
+            fontStyle: "italic",
+            fontWeight: 300,
+            fontSize: "clamp(1rem, 1.8vw, 1.4rem)",
+            letterSpacing: "0.08em",
+            lineHeight: 2.2,
+            textAlign: "center",
+            opacity: 0,
+            animation: "land-rise 1.4s 0.8s ease forwards",
+            color: variant === "a" ? "#E8DFC4" : "var(--ink-mid)",
+          }}
+        >
+          stillness to distill,
+          <br />
+          movement for direction
+        </p>
+
+        <button
+          onClick={() => router.push("/home")}
+          className="font-sans relative"
+          style={{
+            background: "none",
+            border: "none",
+            fontWeight: 400,
+            fontSize: "0.6rem",
+            letterSpacing: "0.4em",
+            textTransform: "uppercase",
+            cursor: "pointer",
+            padding: "0.4rem 0",
+            opacity: 0,
+            animation: "land-fade 1.2s 1.2s ease forwards",
+            color:
+              variant === "a"
+                ? "rgba(255,255,255,0.3)"
+                : "var(--ink-soft)",
+          }}
+        >
+          enter
+        </button>
+      </div>
+
+      {/* Bottom details */}
+      <span
+        className="absolute font-sans"
+        style={{
+          bottom: "2rem",
+          left: "3rem",
+          zIndex: 5,
+          fontWeight: 300,
+          fontSize: "0.6rem",
+          letterSpacing: "0.2em",
+          textTransform: "uppercase",
+          color: "rgba(255,255,255,0.3)",
+          opacity: 0,
+          animation: "land-fade 1s 1.8s ease forwards",
+        }}
+      >
+        Systems &middot; Design &middot; AI
+      </span>
+      <span
+        className="absolute font-sans"
+        style={{
+          bottom: "2rem",
+          right: "3rem",
+          zIndex: 5,
+          fontWeight: 300,
+          fontSize: "0.6rem",
+          letterSpacing: "0.2em",
+          textTransform: "uppercase",
+          color: "rgba(255,255,255,0.3)",
+          opacity: 0,
+          animation: "land-fade 1s 1.8s ease forwards",
+        }}
+      >
+        &copy; 2026
+      </span>
+
+      {/* Variant toggle */}
+      <div
+        className="absolute flex gap-3"
+        style={{
+          bottom: "1.5rem",
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 10,
+          opacity: 0,
+          animation: "land-fade 1s 2s ease forwards",
+        }}
+      >
+        <button
+          onClick={() => switchVariant("a", "cream")}
+          className="font-sans"
+          style={{
+            fontSize: "0.55rem",
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            background:
+              variant === "a" ? "rgba(255,255,255,0.12)" : "none",
+            border: `1px solid ${variant === "a" ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.15)"}`,
+            color:
+              variant === "a"
+                ? "rgba(255,255,255,0.7)"
+                : "rgba(255,255,255,0.4)",
+            padding: "0.35rem 0.8rem",
+            cursor: "pointer",
+            transition: "all 0.3s ease",
+          }}
+        >
+          A
+        </button>
+        <button
+          onClick={() => switchVariant("b", "orange")}
+          className="font-sans"
+          style={{
+            fontSize: "0.55rem",
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            background:
+              variant === "b" ? "rgba(255,255,255,0.12)" : "none",
+            border: `1px solid ${variant === "b" ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.15)"}`,
+            color:
+              variant === "b"
+                ? "rgba(255,255,255,0.7)"
+                : "rgba(255,255,255,0.4)",
+            padding: "0.35rem 0.8rem",
+            cursor: "pointer",
+            transition: "all 0.3s ease",
+          }}
+        >
+          B
+        </button>
+      </div>
+
+      {/* Grain */}
+      <div className="grain" />
     </div>
   );
 }
