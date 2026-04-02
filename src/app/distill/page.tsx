@@ -148,8 +148,8 @@ function FloatingCard({
       contextColor: "rgba(250,246,242,0.75)",
       tagColor: "#963D5A",
       cardRotate: "-1deg",
-      // Card 1: slightly left of center
-      offset: { marginLeft: "clamp(2rem, 6vw, 6rem)", marginRight: "auto" },
+      // Card 1: shifted right of center
+      offset: { marginLeft: "clamp(6rem, 14vw, 14rem)", marginRight: "auto" },
       // Context sits outside card, only edge overlapping
       contextPos: {
         bottom: "-6rem",
@@ -221,7 +221,7 @@ function FloatingCard({
         ))}
       </motion.div>
 
-      {/* Large decorative number in the empty space */}
+      {/* Large decorative number — overlapping top-left corner of card */}
       <div
         className="font-display hidden sm:block absolute select-none pointer-events-none"
         style={{
@@ -229,8 +229,9 @@ function FloatingCard({
           fontWeight: 200,
           lineHeight: 1,
           color: "rgba(76,25,27,0.04)",
-          top: "10%",
-          ...(index === 0 ? { right: "-18rem" } : { left: "-18rem" }),
+          zIndex: 2,
+          top: "-4rem",
+          left: "-5rem",
         }}
       >
         {entry.num}

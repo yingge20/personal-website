@@ -62,8 +62,8 @@ const scene1: Turn[] = [
   {
     role: "os",
     lines: [
-      "remove the label",
-      "offer the felt experience",
+      "remove the label,",
+      "offer the felt experience,",
       "things become fuller",
       "",
       "That's the insight",
@@ -464,11 +464,21 @@ function IPhoneChat() {
   );
 }
 
-/* ─── iPhone Notification (Scene 2) ─── */
+/* ─── iPhone Nudge Chat (Scene 2) ─── */
 
-function IPhoneNotification() {
+function IPhoneNudge() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-15% 0px" });
+  const [phase, setPhase] = useState<"idle" | "typing" | "card">("idle");
+
+  useEffect(() => {
+    if (!isInView) return;
+    // Show typing dots after phone appears
+    const t1 = setTimeout(() => setPhase("typing"), 800);
+    // Then show the card
+    const t2 = setTimeout(() => setPhase("card"), 2200);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [isInView]);
 
   return (
     <div ref={ref}>
@@ -489,7 +499,7 @@ function IPhoneNotification() {
         behavioral nudge
       </motion.div>
 
-      {/* iPhone 17 frame — same as Scene 1 */}
+      {/* iPhone 17 frame */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -517,7 +527,7 @@ function IPhoneNotification() {
           }}
         />
 
-        {/* Header — PERSONAL OS, same as Scene 1 */}
+        {/* Header — PERSONAL OS + typing indicator */}
         <div
           style={{
             padding: "0.65rem 1.2rem 0.4rem",
@@ -540,175 +550,221 @@ function IPhoneNotification() {
           >
             personal os
           </span>
-          <div style={{ height: 16 }} />
+          <div style={{ height: 16, display: "flex", alignItems: "center" }}>
+            <AnimatePresence>
+              {phase === "typing" && (
+                <motion.span
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="font-sans"
+                  style={{
+                    fontSize: "0.55rem",
+                    fontWeight: 300,
+                    color: "#963D5A",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4,
+                  }}
+                >
+                  assistant typing
+                  <TypingDots />
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
-        {/* Content area */}
+        {/* Chat area */}
         <div
           style={{
-            padding: "1.5rem 0.85rem 1rem",
+            padding: "0.6rem 0.85rem 1rem",
             height: 640,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "flex-start",
           }}
         >
-          {/* Notification card — fades in from top */}
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.9, delay: 0.5 }}
-            style={{
-              background: "#E3DAFF",
-              borderRadius: "1.2rem",
-              padding: "1.3rem 1.3rem",
-              width: "100%",
-              boxShadow: "0 4px 20px rgba(42,21,32,0.08)",
-            }}
-          >
-            {/* Greeting line */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.5, delay: 0.8 }}
-              className="font-sans"
-              style={{
-                fontSize: "0.75rem",
-                fontWeight: 300,
-                color: "#5C4555",
-                marginBottom: "0.85rem",
-              }}
-            >
-              Here&rsquo;s your morning greeting.
-            </motion.div>
-
-            {/* Title */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.6, delay: 1.0 }}
-              className="font-serif"
-              style={{
-                fontSize: "1rem",
-                fontWeight: 400,
-                color: "#2A1520",
-                marginBottom: "1rem",
-              }}
-            >
-              {scene2Nudge.title}
-            </motion.div>
-
-            {/* Body lines */}
-            {scene2Nudge.body.map((line, i) => (
+          {/* Typing dots bubble */}
+          <AnimatePresence>
+            {phase === "typing" && (
               <motion.div
-                key={`body-${i}`}
-                initial={{ opacity: 0 }}
-                animate={isInView ? { opacity: 1 } : {}}
-                transition={{ duration: 0.5, delay: 1.2 + i * 0.15 }}
-                className="font-serif"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
                 style={{
-                  fontSize: "0.85rem",
-                  fontWeight: 300,
-                  lineHeight: 1.7,
-                  color: "#4C191B",
-                  fontStyle: "italic",
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  paddingRight: "2.5rem",
+                  marginBottom: "0.6rem",
                 }}
               >
-                {line}
+                <div
+                  style={{
+                    background: "#E3DAFF",
+                    padding: "0.6rem 0.95rem",
+                    borderRadius: "1.1rem",
+                    borderTopLeftRadius: "0.3rem",
+                  }}
+                >
+                  <TypingDots />
+                </div>
               </motion.div>
-            ))}
-
-            {/* Divider */}
-            <motion.div
-              initial={{ opacity: 0, scaleX: 0 }}
-              animate={isInView ? { opacity: 0.2, scaleX: 1 } : {}}
-              transition={{ duration: 0.6, delay: 1.7 }}
-              style={{
-                height: 1,
-                background: "#963D5A",
-                margin: "1rem 0",
-                transformOrigin: "left",
-              }}
-            />
-
-            {/* Instruction lines */}
-            {scene2Nudge.instruction.map((line, i) =>
-              line === "" ? (
-                <div key={`space-${i}`} style={{ height: "0.6rem" }} />
-              ) : (
-                <motion.div
-                  key={`inst-${i}`}
-                  initial={{ opacity: 0 }}
-                  animate={isInView ? { opacity: 1 } : {}}
-                  transition={{ duration: 0.5, delay: 1.9 + i * 0.12 }}
-                  className="font-sans"
-                  style={{
-                    fontSize: "0.8rem",
-                    fontWeight: 300,
-                    lineHeight: 1.65,
-                    color: "#2A1520",
-                  }}
-                >
-                  {line}
-                </motion.div>
-              )
             )}
+          </AnimatePresence>
 
-            {/* Divider */}
-            <motion.div
-              initial={{ opacity: 0, scaleX: 0 }}
-              animate={isInView ? { opacity: 0.2, scaleX: 1 } : {}}
-              transition={{ duration: 0.6, delay: 2.5 }}
-              style={{
-                height: 1,
-                background: "#963D5A",
-                margin: "1rem 0",
-                transformOrigin: "left",
-              }}
-            />
-
-            {/* Prompt */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.5, delay: 2.7 }}
-              className="font-sans"
-              style={{
-                fontSize: "0.75rem",
-                fontWeight: 300,
-                color: "#5C4555",
-                marginBottom: "0.75rem",
-              }}
-            >
-              {scene2Nudge.prompt}
-            </motion.div>
-
-            {/* Option pills */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.5, delay: 2.9 }}
-              style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}
-            >
-              {scene2Nudge.options.map((opt) => (
-                <span
-                  key={opt}
-                  className="font-sans"
+          {/* Nudge card as a chat bubble */}
+          <AnimatePresence>
+            {phase === "card" && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  paddingRight: "1.5rem",
+                }}
+              >
+                <div
                   style={{
-                    fontSize: "0.65rem",
-                    fontWeight: 400,
-                    letterSpacing: "0.08em",
-                    padding: "0.35rem 0.7rem",
-                    borderRadius: "2rem",
-                    background: "rgba(176,125,212,0.18)",
-                    color: "#4C191B",
+                    background: "#E3DAFF",
+                    borderRadius: "1.1rem",
+                    borderTopLeftRadius: "0.3rem",
+                    padding: "1.2rem 1.2rem",
+                    maxWidth: "90%",
+                    boxShadow: "0 2px 12px rgba(42,21,32,0.06)",
                   }}
                 >
-                  {opt}
-                </span>
-              ))}
-            </motion.div>
-          </motion.div>
+                  {/* Greeting */}
+                  <div
+                    className="font-sans"
+                    style={{
+                      fontSize: "0.75rem",
+                      fontWeight: 300,
+                      color: "#5C4555",
+                      marginBottom: "0.75rem",
+                    }}
+                  >
+                    Here&rsquo;s your morning greeting.
+                  </div>
+
+                  {/* Title */}
+                  <NudgeRevealLine
+                    text={scene2Nudge.title}
+                    delay={0.2}
+                    className="font-serif"
+                    style={{
+                      fontSize: "0.95rem",
+                      fontWeight: 400,
+                      color: "#2A1520",
+                      marginBottom: "0.75rem",
+                    }}
+                  />
+
+                  {/* Body */}
+                  {scene2Nudge.body.map((line, i) => (
+                    <NudgeRevealLine
+                      key={`b-${i}`}
+                      text={line}
+                      delay={0.4 + i * 0.12}
+                      className="font-serif"
+                      style={{
+                        fontSize: "0.82rem",
+                        fontWeight: 300,
+                        lineHeight: 1.7,
+                        color: "#4C191B",
+                        fontStyle: "italic",
+                      }}
+                    />
+                  ))}
+
+                  {/* Divider */}
+                  <motion.div
+                    initial={{ opacity: 0, scaleX: 0 }}
+                    animate={{ opacity: 0.2, scaleX: 1 }}
+                    transition={{ duration: 0.5, delay: 0.9 }}
+                    style={{
+                      height: 1,
+                      background: "#963D5A",
+                      margin: "0.8rem 0",
+                      transformOrigin: "left",
+                    }}
+                  />
+
+                  {/* Instructions */}
+                  {scene2Nudge.instruction.map((line, i) =>
+                    line === "" ? (
+                      <div key={`s-${i}`} style={{ height: "0.5rem" }} />
+                    ) : (
+                      <NudgeRevealLine
+                        key={`i-${i}`}
+                        text={line}
+                        delay={1.1 + i * 0.1}
+                        className="font-sans"
+                        style={{
+                          fontSize: "0.78rem",
+                          fontWeight: 300,
+                          lineHeight: 1.65,
+                          color: "#2A1520",
+                        }}
+                      />
+                    )
+                  )}
+
+                  {/* Divider */}
+                  <motion.div
+                    initial={{ opacity: 0, scaleX: 0 }}
+                    animate={{ opacity: 0.2, scaleX: 1 }}
+                    transition={{ duration: 0.5, delay: 1.7 }}
+                    style={{
+                      height: 1,
+                      background: "#963D5A",
+                      margin: "0.8rem 0",
+                      transformOrigin: "left",
+                    }}
+                  />
+
+                  {/* Prompt */}
+                  <NudgeRevealLine
+                    text={scene2Nudge.prompt}
+                    delay={1.9}
+                    className="font-sans"
+                    style={{
+                      fontSize: "0.73rem",
+                      fontWeight: 300,
+                      color: "#5C4555",
+                      marginBottom: "0.65rem",
+                    }}
+                  />
+
+                  {/* Option pills */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.4, delay: 2.1 }}
+                    style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}
+                  >
+                    {scene2Nudge.options.map((opt) => (
+                      <span
+                        key={opt}
+                        className="font-sans"
+                        style={{
+                          fontSize: "0.63rem",
+                          fontWeight: 400,
+                          letterSpacing: "0.08em",
+                          padding: "0.3rem 0.65rem",
+                          borderRadius: "2rem",
+                          background: "rgba(176,125,212,0.18)",
+                          color: "#4C191B",
+                        }}
+                      >
+                        {opt}
+                      </span>
+                    ))}
+                  </motion.div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Home indicator */}
@@ -723,6 +779,32 @@ function IPhoneNotification() {
         />
       </motion.div>
     </div>
+  );
+}
+
+/* ─── Nudge line reveal helper ─── */
+
+function NudgeRevealLine({
+  text,
+  delay,
+  className,
+  style,
+}: {
+  text: string;
+  delay: number;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4, delay }}
+      className={className}
+      style={style}
+    >
+      {text}
+    </motion.div>
   );
 }
 
@@ -925,7 +1007,7 @@ export default function ShapePage() {
         <div style={{ height: "clamp(5rem, 10vw, 8rem)" }} />
 
         {/* Scene 2 — Nudge */}
-        <IPhoneNotification />
+        <IPhoneNudge />
 
       </div>
 
