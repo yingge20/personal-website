@@ -84,7 +84,7 @@ function NameTypography({ variant }: { variant: NameVariant }) {
   const fontSize = "clamp(5rem, 20vw, 22rem)";
   const outline = { color: "transparent" as const, WebkitTextStroke: "2px #4C191B" };
   const filled = { color: "#4C191B" };
-  const transition = { duration: 1.4, delay: 0.3, ease: [0.16, 1, 0.3, 1] as number[] };
+  const transition = { duration: 1.4, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const };
   const common = { fontWeight: 900, fontSize, lineHeight: 0.8, letterSpacing: "-0.05em", zIndex: 2 };
 
   if (variant === "d1") {
