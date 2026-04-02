@@ -87,7 +87,7 @@ function NameTypography() {
 
   return (
     <motion.div
-      className="absolute font-display left-4 sm:left-[4vw] right-4 sm:right-[4vw] flex items-baseline gap-[0.15em]"
+      className="absolute font-display left-4 sm:left-[2vw] right-4 sm:right-[4vw] flex items-baseline gap-[0.15em]"
       style={{ bottom: "7vh", zIndex: 2 }}
       initial={{ opacity: 0, y: 30 }} animate={{ opacity: 0.95, y: 0 }} transition={transition}
     >
@@ -127,11 +127,11 @@ function HeroPanel({
         <motion.div
           className="absolute z-10"
           style={{
-            top: "38%",
-            left: "45%",
+            top: "35%",
+            left: "44%",
             transform: "translate(-50%, -50%)",
             textAlign: "center",
-            maxWidth: "clamp(280px, 30vw, 480px)",
+            maxWidth: "clamp(260px, 26vw, 400px)",
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -152,7 +152,7 @@ function HeroPanel({
           <p
             className="font-sans"
             style={{
-              fontSize: "clamp(1.1rem, 2.2vw, 1.6rem)",
+              fontSize: "clamp(1rem, 1.6vw, 1.3rem)",
               color: "#2A1520",
               lineHeight: 1.8,
               fontWeight: 300,
