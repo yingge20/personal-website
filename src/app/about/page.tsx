@@ -152,71 +152,187 @@ function HeroPanel({
   nameVariant: NameVariant;
 }) {
   return (
-    <div
-      className="sticky top-0 h-screen overflow-hidden"
-      style={{ backgroundColor: "#FAF6F2", zIndex: 1 }}
-    >
-      {/* Y — G Monogram — top left */}
-      <div className="absolute z-10" style={{ top: "1.5rem", left: "1.5rem" }}>
-        <Monogram color="#4C191B" />
+    <>
+      {/* Desktop layout — original */}
+      <div
+        className="sticky top-0 h-screen overflow-hidden hidden sm:block"
+        style={{ backgroundColor: "#FAF6F2", zIndex: 1 }}
+      >
+        <div className="absolute z-10" style={{ top: "1.5rem", left: "1.5rem" }}>
+          <Monogram color="#4C191B" />
+        </div>
+
+        {photos.map((photo, i) => (
+          <PhotoPlaceholder
+            key={i}
+            photo={photo}
+            index={i}
+            scrollYProgress={scrollYProgress}
+          />
+        ))}
+
+        <NameTypography variant={nameVariant} />
+
+        <motion.div
+          className="absolute z-10"
+          style={{
+            top: "38%",
+            left: "45%",
+            transform: "translate(-50%, -50%)",
+            textAlign: "center",
+            maxWidth: "clamp(280px, 30vw, 480px)",
+          }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <span
+            className="font-sans block mb-5"
+            style={{
+              fontSize: "0.75rem",
+              letterSpacing: "0.35em",
+              textTransform: "uppercase",
+              color: "rgba(76,25,27,0.55)",
+              fontWeight: 400,
+            }}
+          >
+            Product &middot; Builder
+          </span>
+          <p
+            className="font-sans"
+            style={{
+              fontSize: "clamp(1.1rem, 2.2vw, 1.6rem)",
+              color: "#2A1520",
+              lineHeight: 1.8,
+              fontWeight: 300,
+            }}
+          >
+            I design systems that shape behavior, not just generate answers. At the intersection of{" "}
+            <strong style={{ color: "#2A1520", fontWeight: 500 }}>
+              AI, decision-making, and human experience
+            </strong>
+            .
+          </p>
+        </motion.div>
       </div>
 
-      {/* Floating photos */}
-      {photos.map((photo, i) => (
-        <PhotoPlaceholder
-          key={i}
-          photo={photo}
-          index={i}
-          scrollYProgress={scrollYProgress}
-        />
-      ))}
-
-      {/* Massive name — bottom left */}
-      <NameTypography variant={nameVariant} />
-
-      {/* Bio — centered in the whitespace */}
-      <motion.div
-        className="absolute z-10"
-        style={{
-          top: "38%",
-          left: "45%",
-          transform: "translate(-50%, -50%)",
-          textAlign: "center",
-          maxWidth: "clamp(280px, 30vw, 480px)",
-        }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.2, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      {/* Mobile layout — stacked vertically */}
+      <div
+        className="block sm:hidden"
+        style={{ backgroundColor: "#FAF6F2", zIndex: 1 }}
       >
-        <span
-          className="font-sans block mb-5"
-          style={{
-            fontSize: "0.75rem",
-            letterSpacing: "0.35em",
-            textTransform: "uppercase",
-            color: "rgba(76,25,27,0.55)",
-            fontWeight: 400,
-          }}
+        {/* Monogram */}
+        <div style={{ padding: "1.5rem" }}>
+          <Monogram color="#4C191B" />
+        </div>
+
+        {/* Name — large, at top */}
+        <div style={{ padding: "2rem 1.5rem 1.5rem", position: "relative" }}>
+          <motion.div
+            className="font-display"
+            style={{
+              fontWeight: 900,
+              fontSize: "clamp(4.5rem, 22vw, 7rem)",
+              lineHeight: 0.85,
+              letterSpacing: "-0.05em",
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 0.95, y: 0 }}
+            transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
+          >
+            <span style={{ color: "transparent", WebkitTextStroke: "1.5px #4C191B" }}>Ying</span>
+            <br />
+            <span style={{ color: "#4C191B", marginLeft: "15vw" }}>Ge</span>
+          </motion.div>
+        </div>
+
+        {/* First row of photos */}
+        <div style={{ display: "flex", gap: "0.75rem", padding: "1rem 1.5rem", justifyContent: "center" }}>
+          {[photos[0], photos[2]].map((photo, i) => (
+            <div
+              key={`top-${i}`}
+              className="flex items-center justify-center font-sans"
+              style={{
+                width: i === 0 ? "38vw" : "42vw",
+                height: i === 0 ? "28vh" : "32vh",
+                backgroundColor: photo.bg,
+                ...(photo.border ? { border: "1px solid rgba(176,125,212,0.2)" } : {}),
+              }}
+            >
+              <span style={{
+                fontSize: "0.5rem",
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                color: photo.bg === "#963D5A" ? "rgba(255,255,255,0.4)" : "rgba(176,125,212,0.4)",
+              }}>
+                photo
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Bio text — centered */}
+        <motion.div
+          style={{ padding: "2.5rem 2rem", textAlign: "center" }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
-          Product &middot; Builder
-        </span>
-        <p
-          className="font-sans"
-          style={{
-            fontSize: "clamp(1.1rem, 2.2vw, 1.6rem)",
-            color: "#2A1520",
-            lineHeight: 1.8,
-            fontWeight: 300,
-          }}
-        >
-          I design systems that shape behavior, not just generate answers. At the intersection of{" "}
-          <strong style={{ color: "#2A1520", fontWeight: 500 }}>
-            AI, decision-making, and human experience
-          </strong>
-          .
-        </p>
-      </motion.div>
-    </div>
+          <span
+            className="font-sans block mb-4"
+            style={{
+              fontSize: "0.7rem",
+              letterSpacing: "0.35em",
+              textTransform: "uppercase",
+              color: "rgba(76,25,27,0.55)",
+              fontWeight: 400,
+            }}
+          >
+            Product &middot; Builder
+          </span>
+          <p
+            className="font-sans"
+            style={{
+              fontSize: "1.1rem",
+              color: "#2A1520",
+              lineHeight: 1.8,
+              fontWeight: 300,
+            }}
+          >
+            I design systems that shape behavior, not just generate answers. At the intersection of{" "}
+            <strong style={{ color: "#2A1520", fontWeight: 500 }}>
+              AI, decision-making, and human experience
+            </strong>
+            .
+          </p>
+        </motion.div>
+
+        {/* Second row of photos */}
+        <div style={{ display: "flex", gap: "0.75rem", padding: "0 1.5rem 2rem", justifyContent: "center" }}>
+          {[photos[5], photos[6]].map((photo, i) => (
+            <div
+              key={`bot-${i}`}
+              className="flex items-center justify-center font-sans"
+              style={{
+                width: i === 0 ? "42vw" : "34vw",
+                height: i === 0 ? "28vh" : "22vh",
+                backgroundColor: photo.bg,
+                ...(photo.border ? { border: "1px solid rgba(176,125,212,0.2)" } : {}),
+              }}
+            >
+              <span style={{
+                fontSize: "0.5rem",
+                letterSpacing: "0.15em",
+                textTransform: "uppercase",
+                color: photo.bg === "#B07DD4" ? "rgba(255,255,255,0.4)" : "rgba(176,125,212,0.4)",
+              }}>
+                photo
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -383,49 +499,83 @@ function RotatingPanels({ onTransition }: { onTransition: (destBg: string, href:
   };
 
   return (
-    <div className="flex w-full h-full relative">
-      {workSections.map((s, i) => {
-        const anySelected = selected !== null;
-        return (
-          <div
-            key={s.key}
-            className="relative flex-1 cursor-pointer overflow-hidden"
-            style={{
-              borderRight: i < 2 ? "1px solid rgba(250,246,242,0.06)" : "none",
-              zIndex: 6,
-            }}
-            onClick={() => handleClick(s.key, s.href, i)}
-          >
-            {/* Panel background */}
+    <>
+      {/* Desktop — side by side */}
+      <div className="hidden sm:flex w-full h-full relative">
+        {workSections.map((s, i) => {
+          const anySelected = selected !== null;
+          return (
             <div
-              className="absolute inset-0"
-              style={{ backgroundColor: PANEL_COLORS[i] }}
-            />
-
-            {/* Card content */}
-            <motion.div
-              className="absolute inset-0 flex flex-col items-center justify-center px-6 z-[3]"
-              animate={{ opacity: anySelected ? 0 : 1 }}
-              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+              key={s.key}
+              className="relative flex-1 cursor-pointer overflow-hidden"
+              style={{
+                borderRight: i < 2 ? "1px solid rgba(250,246,242,0.06)" : "none",
+                zIndex: 6,
+              }}
+              onClick={() => handleClick(s.key, s.href, i)}
             >
-              <span className="font-sans mb-4" style={{ fontSize: "0.8rem", letterSpacing: "0.3em", color: s.accent }}>{s.num}</span>
-              <h3 className="font-display uppercase text-center" style={{ fontSize: "clamp(2.4rem, 4.5vw, 4rem)", fontWeight: 300, color: textColors[i], lineHeight: 1.05, letterSpacing: "0.08em" }}>{s.title}</h3>
-              <div className="mt-5" style={{ width: 30, height: 1, backgroundColor: s.accent, opacity: 0.6 }} />
-              <p className="font-sans text-center mt-5" style={{ fontSize: "clamp(1rem, 1.3vw, 1.1rem)", lineHeight: 1.7, color: subtextColors[i], fontWeight: 400, maxWidth: "24ch" }}>{s.desc}</p>
-              <span className="font-sans mt-10" style={{ fontSize: "0.75rem", letterSpacing: "0.25em", textTransform: "uppercase", color: hintColors[i] }}>Click to enter</span>
-            </motion.div>
-          </div>
-        );
-      })}
+              <div
+                className="absolute inset-0"
+                style={{ backgroundColor: PANEL_COLORS[i] }}
+              />
+              <motion.div
+                className="absolute inset-0 flex flex-col items-center justify-center px-6 z-[3]"
+                animate={{ opacity: anySelected ? 0 : 1 }}
+                transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+              >
+                <span className="font-sans mb-4" style={{ fontSize: "0.8rem", letterSpacing: "0.3em", color: s.accent }}>{s.num}</span>
+                <h3 className="font-display uppercase text-center" style={{ fontSize: "clamp(2.4rem, 4.5vw, 4rem)", fontWeight: 300, color: textColors[i], lineHeight: 1.05, letterSpacing: "0.08em" }}>{s.title}</h3>
+                <div className="mt-5" style={{ width: 30, height: 1, backgroundColor: s.accent, opacity: 0.6 }} />
+                <p className="font-sans text-center mt-5" style={{ fontSize: "clamp(1rem, 1.3vw, 1.1rem)", lineHeight: 1.7, color: subtextColors[i], fontWeight: 400, maxWidth: "24ch" }}>{s.desc}</p>
+                <span className="font-sans mt-10" style={{ fontSize: "0.75rem", letterSpacing: "0.25em", textTransform: "uppercase", color: hintColors[i] }}>Click to enter</span>
+              </motion.div>
+            </div>
+          );
+        })}
+      </div>
 
-    </div>
+      {/* Mobile — stacked full-width */}
+      <div className="flex sm:hidden flex-col w-full relative">
+        {workSections.map((s, i) => {
+          const anySelected = selected !== null;
+          return (
+            <div
+              key={s.key}
+              className="relative cursor-pointer overflow-hidden"
+              style={{
+                height: "100vh",
+                borderBottom: i < 2 ? "1px solid rgba(250,246,242,0.06)" : "none",
+                zIndex: 6,
+              }}
+              onClick={() => handleClick(s.key, s.href, i)}
+            >
+              <div
+                className="absolute inset-0"
+                style={{ backgroundColor: PANEL_COLORS[i] }}
+              />
+              <motion.div
+                className="absolute inset-0 flex flex-col items-center justify-center px-6 z-[3]"
+                animate={{ opacity: anySelected ? 0 : 1 }}
+                transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+              >
+                <span className="font-sans mb-4" style={{ fontSize: "0.8rem", letterSpacing: "0.3em", color: s.accent }}>{s.num}</span>
+                <h3 className="font-display uppercase text-center" style={{ fontSize: "clamp(2.8rem, 12vw, 4rem)", fontWeight: 300, color: textColors[i], lineHeight: 1.05, letterSpacing: "0.08em" }}>{s.title}</h3>
+                <div className="mt-5" style={{ width: 30, height: 1, backgroundColor: s.accent, opacity: 0.6 }} />
+                <p className="font-sans text-center mt-5" style={{ fontSize: "1.05rem", lineHeight: 1.7, color: subtextColors[i], fontWeight: 400, maxWidth: "28ch" }}>{s.desc}</p>
+                <span className="font-sans mt-10" style={{ fontSize: "0.75rem", letterSpacing: "0.25em", textTransform: "uppercase", color: hintColors[i] }}>Tap to enter</span>
+              </motion.div>
+            </div>
+          );
+        })}
+      </div>
+    </>
   );
 }
 
 function ThirdPanel({ onTransition }: { onTransition: (destBg: string, href: string) => void }) {
   return (
     <div
-      className="sticky top-0 h-screen flex items-center justify-center overflow-hidden"
+      className="sm:sticky sm:top-0 sm:h-screen flex items-center justify-center overflow-hidden"
       style={{ backgroundColor: "#4C191B", zIndex: 3 }}
     >
       <RotatingPanels onTransition={onTransition} />
@@ -478,7 +628,7 @@ export default function AboutPage() {
     <div style={{ background: "#FAF6F2" }}>
       {/* Variant toggles — top right */}
       <div
-        className="fixed flex flex-col gap-2 z-50"
+        className="fixed hidden sm:flex flex-col gap-2 z-50"
         style={{ top: "1.5rem", right: "1.5rem" }}
       >
         <div className="flex gap-2">
@@ -505,21 +655,22 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* Hero scroll wrapper */}
+      {/* Hero scroll wrapper — auto height on mobile, fixed on desktop */}
       <div
         ref={heroRef}
-        style={{ height: "115vh", backgroundColor: "#FAF6F2" }}
+        className="sm:h-[115vh]"
+        style={{ backgroundColor: "#FAF6F2" }}
       >
         <HeroPanel scrollYProgress={scrollYProgress} nameVariant={nameVariant} />
       </div>
 
       {/* Typography scroll wrapper */}
-      <div style={{ height: "160vh", backgroundColor: "#B07DD4" }}>
+      <div className="h-[100vh] sm:h-[160vh]" style={{ backgroundColor: "#B07DD4" }}>
         <TypographyPanel />
       </div>
 
-      {/* Third panel scroll wrapper */}
-      <div style={{ height: "120vh", backgroundColor: "#4C191B" }}>
+      {/* Third panel scroll wrapper — 300vh on mobile for 3 stacked panels */}
+      <div className="h-auto sm:h-[120vh]" style={{ backgroundColor: "#4C191B" }}>
         <ThirdPanel onTransition={handleTransition} />
       </div>
 
