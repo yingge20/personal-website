@@ -52,13 +52,12 @@ export default function LandingPage() {
 
       {/* Name */}
       <h1
-        className="absolute font-display"
+        className="absolute font-display left-4 sm:left-10"
         style={{
           top: "8vh",
-          left: "2.5rem",
           zIndex: 6,
           fontWeight: 200,
-          fontSize: "clamp(6rem, 13vw, 14rem)",
+          fontSize: "clamp(3.5rem, 13vw, 14rem)",
           letterSpacing: "-0.02em",
           color: nameColor === "cream" ? "#F0EBE0" : "#E8653A",
         }}
@@ -80,11 +79,9 @@ export default function LandingPage() {
 
       {/* Window panel */}
       <div
-        className="relative z-[4] flex flex-col items-center justify-center gap-10"
+        className="relative z-[4] flex flex-col items-center justify-center gap-6 sm:gap-10 w-[88vw] sm:w-[80vw] md:w-[72vw] h-[55vh] sm:h-[60vh] md:h-[64vh]"
         style={{
-          width: "72vw",
-          height: "64vh",
-          marginTop: "12vh",
+          marginTop: "14vh",
           opacity: 0,
           animation: "land-fade 1.6s 0.2s ease forwards",
           ...(variant === "a"
@@ -131,7 +128,8 @@ export default function LandingPage() {
             letterSpacing: "0.4em",
             textTransform: "uppercase",
             cursor: "pointer",
-            padding: "0.4rem 0",
+            padding: "0.75rem 1.5rem",
+            minHeight: "44px",
             opacity: 0,
             animation: "land-fade 1.2s 1.2s ease forwards",
             color:
@@ -146,10 +144,9 @@ export default function LandingPage() {
 
       {/* Bottom details */}
       <span
-        className="absolute font-sans"
+        className="absolute font-sans left-4 sm:left-8 md:left-12"
         style={{
           bottom: "2rem",
-          left: "3rem",
           zIndex: 5,
           fontWeight: 300,
           fontSize: "0.6rem",
@@ -163,10 +160,9 @@ export default function LandingPage() {
         Systems &middot; Design &middot; AI
       </span>
       <span
-        className="absolute font-sans"
+        className="absolute font-sans right-4 sm:right-8 md:right-12"
         style={{
           bottom: "2rem",
-          right: "3rem",
           zIndex: 5,
           fontWeight: 300,
           fontSize: "0.6rem",
@@ -206,7 +202,9 @@ export default function LandingPage() {
               variant === "a"
                 ? "rgba(255,255,255,0.7)"
                 : "rgba(255,255,255,0.4)",
-            padding: "0.35rem 0.8rem",
+            padding: "0.5rem 1rem",
+            minHeight: "44px",
+            minWidth: "44px",
             cursor: "pointer",
             transition: "all 0.3s ease",
           }}
@@ -227,7 +225,9 @@ export default function LandingPage() {
               variant === "b"
                 ? "rgba(255,255,255,0.7)"
                 : "rgba(255,255,255,0.4)",
-            padding: "0.35rem 0.8rem",
+            padding: "0.5rem 1rem",
+            minHeight: "44px",
+            minWidth: "44px",
             cursor: "pointer",
             transition: "all 0.3s ease",
           }}

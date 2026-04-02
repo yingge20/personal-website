@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Monogram } from "@/components/monogram";
 import { motion, useScroll, useTransform, useSpring, useInView } from "framer-motion";
 import { useRef } from "react";
 
@@ -11,11 +12,11 @@ const tenets = [
     titleBold: "restraint",
     titleBold2: "made ",
     titleAccent: "visible.",
-    bg: "#3D1525",
+    bg: "#4C191B",
     text: "#FFFFFF",
     textMuted: "rgba(255, 255, 255, 0.35)",
-    accent: "#C4A8E0",
-    ghostColor: "rgba(255,255,255,0.03)",
+    accent: "#B07DD4",
+    ghostColor: "rgba(255,255,255,0.04)",
     align: "right" as const,
   },
   {
@@ -24,11 +25,11 @@ const tenets = [
     titleBold: "automation",
     titleBold2: "without ",
     titleAccent: "intelligence.",
-    bg: "#E8E3F5",
-    text: "#2A0E1A",
-    textMuted: "rgba(42, 14, 26, 0.3)",
-    accent: "#6B2D80",
-    ghostColor: "rgba(42,14,26,0.04)",
+    bg: "#E3DAFF",
+    text: "#4C191B",
+    textMuted: "rgba(76, 25, 27, 0.3)",
+    accent: "#963D5A",
+    ghostColor: "rgba(76,25,27,0.05)",
     align: "left" as const,
   },
   {
@@ -37,11 +38,11 @@ const tenets = [
     titleBold: "design",
     titleBold2: "",
     titleAccent: "endures.",
-    bg: "#F5EDE4",
-    text: "#2A0E1A",
-    textMuted: "rgba(42, 14, 26, 0.25)",
-    accent: "#9B3D5E",
-    ghostColor: "rgba(42,14,26,0.04)",
+    bg: "#FAF6F2",
+    text: "#4C191B",
+    textMuted: "rgba(76, 25, 27, 0.25)",
+    accent: "#963D5A",
+    ghostColor: "rgba(76,25,27,0.04)",
     align: "right" as const,
   },
 ];
@@ -65,11 +66,12 @@ function TenetPanel({
   const rawParallax = useTransform(scrollYProgress, [0, 1], [-25, 25]);
   const parallaxY = useSpring(rawParallax, { stiffness: 40, damping: 30 });
 
+  // On mobile: always center-align. On desktop: use configured alignment.
   const alignClass =
     tenet.align === "left"
-      ? "items-start text-left"
+      ? "items-center text-center sm:items-start sm:text-left"
       : tenet.align === "right"
-        ? "items-end text-right"
+        ? "items-center text-center sm:items-end sm:text-right"
         : "items-center text-center";
 
   // Consistent ghost number placement:
@@ -85,20 +87,20 @@ function TenetPanel({
   return (
     <div
       ref={ref}
-      className="sticky flex items-center justify-center overflow-hidden px-8 md:px-16 lg:px-24"
+      className="sticky flex items-center justify-center overflow-hidden px-5 sm:px-8 md:px-16 lg:px-24"
       style={{
         top: "80px",
-        height: "75vh",
+        height: "max(75vh, 500px)",
         backgroundColor: tenet.bg,
         zIndex: index + 1,
       }}
     >
-      {/* Ghost number — consistent size, opposite side of text */}
+      {/* Ghost number — hidden on mobile, consistent size on desktop */}
       <motion.span
-        className="absolute font-display select-none pointer-events-none"
+        className="absolute font-display select-none pointer-events-none hidden sm:block"
         style={{
           ...ghostStyle,
-          fontSize: "clamp(16rem, 28vw, 24rem)",
+          fontSize: "clamp(10rem, 28vw, 24rem)",
           fontWeight: 900,
           lineHeight: 0.8,
           color: tenet.ghostColor,
@@ -145,7 +147,7 @@ function TenetPanel({
         <span
           className="font-display"
           style={{
-            fontSize: "clamp(3.5rem, 9vw, 8rem)",
+            fontSize: "clamp(2.5rem, 9vw, 8rem)",
             fontWeight: 800,
             color: tenet.text,
             lineHeight: 1.05,
@@ -158,7 +160,7 @@ function TenetPanel({
         <span
           className="font-display"
           style={{
-            fontSize: "clamp(3.5rem, 9vw, 8rem)",
+            fontSize: "clamp(2.5rem, 9vw, 8rem)",
             fontWeight: 800,
             color: tenet.text,
             lineHeight: 1.05,
@@ -180,55 +182,18 @@ export default function TenetsPage() {
     <div className="min-h-screen" style={{ background: tenets[0].bg }}>
       {/* Fixed Header */}
       <header
-        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-12"
+        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-8 md:px-12"
         style={{
           height: "80px",
-          background: "rgba(61,21,37,0.85)",
+          background: "rgba(76,25,27,0.85)",
           backdropFilter: "blur(12px)",
         }}
       >
-        <Link
-          href="/home"
-          className="flex items-baseline gap-[2px] no-underline"
-        >
-          <span
-            className="font-display"
-            style={{
-              fontSize: "clamp(1.4rem, 2.2vw, 1.8rem)",
-              fontWeight: 500,
-              letterSpacing: "-0.04em",
-              color: "rgba(255,255,255,0.9)",
-            }}
-          >
-            Y
-          </span>
-          <span
-            className="font-display"
-            style={{
-              fontSize: "clamp(1.4rem, 2.2vw, 1.8rem)",
-              fontWeight: 500,
-              color: "rgba(255,255,255,0.9)",
-              margin: "0 1px",
-            }}
-          >
-            —
-          </span>
-          <span
-            className="font-display"
-            style={{
-              fontSize: "clamp(1.4rem, 2.2vw, 1.8rem)",
-              fontWeight: 500,
-              letterSpacing: "-0.04em",
-              color: "rgba(255,255,255,0.9)",
-            }}
-          >
-            G
-          </span>
-        </Link>
+        <Monogram color="rgba(255,255,255,0.9)" />
 
-        <nav className="flex items-center gap-6 md:gap-8">
+        <nav className="flex items-center gap-3 sm:gap-6 md:gap-8">
           <Link
-            href="/home"
+            href="/about"
             className="font-sans no-underline"
             style={{
               fontSize: "0.72rem",
@@ -237,6 +202,10 @@ export default function TenetsPage() {
               textTransform: "uppercase",
               color: "rgba(255,255,255,0.45)",
               transition: "color 0.3s ease",
+              padding: "0.5rem 0",
+              minHeight: "44px",
+              display: "flex",
+              alignItems: "center",
             }}
             onMouseEnter={(e) =>
               (e.currentTarget.style.color = "rgba(255,255,255,0.9)")
@@ -245,7 +214,7 @@ export default function TenetsPage() {
               (e.currentTarget.style.color = "rgba(255,255,255,0.45)")
             }
           >
-            Home
+            About
           </Link>
           <Link
             href="/distill"
@@ -257,6 +226,10 @@ export default function TenetsPage() {
               textTransform: "uppercase",
               color: "rgba(255,255,255,0.45)",
               transition: "color 0.3s ease",
+              padding: "0.5rem 0",
+              minHeight: "44px",
+              display: "flex",
+              alignItems: "center",
             }}
             onMouseEnter={(e) =>
               (e.currentTarget.style.color = "rgba(255,255,255,0.9)")
@@ -277,6 +250,10 @@ export default function TenetsPage() {
               textTransform: "uppercase",
               color: "rgba(255,255,255,0.45)",
               transition: "color 0.3s ease",
+              padding: "0.5rem 0",
+              minHeight: "44px",
+              display: "flex",
+              alignItems: "center",
             }}
             onMouseEnter={(e) =>
               (e.currentTarget.style.color = "rgba(255,255,255,0.9)")
@@ -295,6 +272,10 @@ export default function TenetsPage() {
               letterSpacing: "0.22em",
               textTransform: "uppercase",
               color: "rgba(255,255,255,0.9)",
+              padding: "0.5rem 0",
+              minHeight: "44px",
+              display: "flex",
+              alignItems: "center",
             }}
           >
             Tenets

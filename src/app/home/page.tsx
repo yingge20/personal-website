@@ -76,15 +76,15 @@ function Card({
       onClick={onClick}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="group flex-1 relative flex flex-col justify-end cursor-pointer overflow-hidden"
+      className="group flex-1 relative flex flex-col justify-end cursor-pointer overflow-hidden border-b md:border-b-0 md:border-r"
       style={{
-        padding: "3rem 3.5rem 4rem",
+        padding: "clamp(2rem, 4vw, 3rem) clamp(1.5rem, 4vw, 3.5rem) clamp(2.5rem, 5vw, 4rem)",
         background: card.bg || "var(--linen)",
-        borderRight: "1px solid var(--linen-deep)",
+        borderColor: "var(--linen-deep)",
         transition: "background 0.5s ease",
         transformStyle: "preserve-3d",
         willChange: "transform, opacity",
-        minHeight: "calc(100vh - 80px)",
+        minHeight: "clamp(280px, 50vh, calc(100vh - 80px))",
       }}
     >
       {/* Hover gradient */}
@@ -96,8 +96,8 @@ function Card({
       <span
         className="absolute font-sans"
         style={{
-          top: "3rem",
-          left: "3.5rem",
+          top: "clamp(1.5rem, 3vw, 3rem)",
+          left: "clamp(1.5rem, 3vw, 3.5rem)",
           fontWeight: 300,
           fontSize: "0.68rem",
           letterSpacing: "0.3em",
@@ -111,8 +111,8 @@ function Card({
       <span
         className="absolute"
         style={{
-          top: "3rem",
-          right: "3.5rem",
+          top: "clamp(1.5rem, 3vw, 3rem)",
+          right: "clamp(1.5rem, 3vw, 3.5rem)",
           fontSize: "0.9rem",
           color: "var(--linen-deep)",
           transition:
@@ -126,7 +126,7 @@ function Card({
         className="font-serif relative z-[1]"
         style={{
           fontWeight: 300,
-          fontSize: "clamp(3.2rem, 4.5vw, 5.8rem)",
+          fontSize: "clamp(2.4rem, 4.5vw, 5.8rem)",
           lineHeight: 1,
           letterSpacing: "-0.02em",
           color: "var(--ink)",
@@ -162,8 +162,7 @@ export default function HomePage() {
     >
       {/* Nav */}
       <nav
-        className="flex justify-between items-center shrink-0"
-        style={{ padding: "2rem 3rem" }}
+        className="flex justify-between items-center shrink-0 px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8"
       >
         <button
           onClick={() => router.push("/")}
@@ -203,9 +202,9 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* Cards */}
+      {/* Cards — stack vertically on mobile, horizontal on md+ */}
       <div
-        className="flex flex-1"
+        className="flex flex-col md:flex-row flex-1"
         style={{ borderTop: "1px solid var(--linen-deep)" }}
       >
         {cards.map((card) => (

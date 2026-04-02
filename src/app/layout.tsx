@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import { Cormorant_Garamond } from "next/font/google";
 import { Outfit } from "next/font/google";
+import { LinkedInFooter } from "@/components/linkedin-footer";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -41,6 +42,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col font-[family-name:var(--font-dm-sans)]">
         {children}
+        <LinkedInFooter />
       </body>
     </html>
   );
