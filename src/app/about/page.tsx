@@ -78,64 +78,17 @@ function PhotoPlaceholder({
   );
 }
 
-type NameVariant = "d1" | "d4" | "d5";
-
-function NameTypography({ variant }: { variant: NameVariant }) {
+function NameTypography() {
   const fontSize = "clamp(5rem, 20vw, 22rem)";
   const outline = { color: "transparent" as const, WebkitTextStroke: "2px #4C191B" };
   const filled = { color: "#4C191B" };
   const transition = { duration: 1.4, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const };
   const common = { fontWeight: 900, fontSize, lineHeight: 0.8, letterSpacing: "-0.05em", zIndex: 2 };
 
-  if (variant === "d1") {
-    // Diagonal left — Ying upper-left, Ge below + indented right, both on left half
-    return (
-      <>
-        <motion.span
-          className="absolute font-display left-4 sm:left-[4vw]"
-          style={{ ...common, ...outline, bottom: "18vh" }}
-          initial={{ opacity: 0, x: -40 }} animate={{ opacity: 0.95, x: 0 }} transition={transition}
-        >
-          Ying
-        </motion.span>
-        <motion.span
-          className="absolute font-display left-[38vw] sm:left-[42vw]"
-          style={{ ...common, ...filled, bottom: "1vh" }}
-          initial={{ opacity: 0, x: -40 }} animate={{ opacity: 0.95, x: 0 }} transition={{ ...transition, delay: 0.5 }}
-        >
-          Ge
-        </motion.span>
-      </>
-    );
-  }
-
-  if (variant === "d4") {
-    // D4: Vertical cascade — large Ying top-left, Ge tucked underneath offset right
-    return (
-      <>
-        <motion.span
-          className="absolute font-display left-4 sm:left-[4vw]"
-          style={{ ...common, ...outline, bottom: "18vh" }}
-          initial={{ opacity: 0, y: -40 }} animate={{ opacity: 0.95, y: 0 }} transition={transition}
-        >
-          Ying
-        </motion.span>
-        <motion.span
-          className="absolute font-display left-[38vw] sm:left-[40vw]"
-          style={{ ...common, ...filled, bottom: "1vh" }}
-          initial={{ opacity: 0, y: 40 }} animate={{ opacity: 0.95, y: 0 }} transition={{ ...transition, delay: 0.5 }}
-        >
-          Ge
-        </motion.span>
-      </>
-    );
-  }
-
-  // D5: Inline — both names on one line near the bottom
   return (
     <motion.div
       className="absolute font-display left-4 sm:left-[4vw] right-4 sm:right-[4vw] flex items-baseline gap-[0.15em]"
-      style={{ bottom: "5vh", zIndex: 2 }}
+      style={{ bottom: "7vh", zIndex: 2 }}
       initial={{ opacity: 0, y: 30 }} animate={{ opacity: 0.95, y: 0 }} transition={transition}
     >
       <span style={{ ...common, ...outline }}>Ying</span>
@@ -146,10 +99,8 @@ function NameTypography({ variant }: { variant: NameVariant }) {
 
 function HeroPanel({
   scrollYProgress,
-  nameVariant,
 }: {
   scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
-  nameVariant: NameVariant;
 }) {
   return (
     <>
@@ -171,7 +122,7 @@ function HeroPanel({
           />
         ))}
 
-        <NameTypography variant={nameVariant} />
+        <NameTypography />
 
         <motion.div
           className="absolute z-10"
@@ -226,27 +177,25 @@ function HeroPanel({
           <Monogram color="#4C191B" />
         </div>
 
-        {/* Name — large, at top */}
-        <div style={{ padding: "2rem 1.5rem 1.5rem", position: "relative" }}>
-          <motion.div
-            className="font-display"
-            style={{
-              fontWeight: 900,
-              fontSize: "clamp(4.5rem, 22vw, 7rem)",
-              lineHeight: 0.85,
-              letterSpacing: "-0.05em",
-            }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 0.95, y: 0 }}
-            transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
-          >
-            <span style={{ color: "transparent", WebkitTextStroke: "1.5px #4C191B" }}>Ying</span>
-            <br />
-            <span style={{ color: "#4C191B", marginLeft: "15vw" }}>Ge</span>
-          </motion.div>
-        </div>
+        {/* Name — inline, responsive */}
+        <motion.div
+          className="font-display flex items-baseline gap-[0.1em]"
+          style={{
+            padding: "1rem 1.5rem 1.5rem",
+            fontWeight: 900,
+            fontSize: "clamp(4rem, 18vw, 6rem)",
+            lineHeight: 0.85,
+            letterSpacing: "-0.05em",
+          }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 0.95, y: 0 }}
+          transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
+        >
+          <span style={{ color: "transparent", WebkitTextStroke: "1.5px #4C191B" }}>Ying</span>
+          <span style={{ color: "#4C191B" }}>Ge</span>
+        </motion.div>
 
-        {/* First gallery cluster — overlapping, scattered */}
+        {/* First gallery cluster — overlapping, scattered, floating */}
         <div style={{ position: "relative", height: "42vh", margin: "0 1rem" }}>
           {/* Large berry — back left */}
           <motion.div
@@ -259,8 +208,17 @@ function HeroPanel({
               zIndex: 1,
             }}
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            animate={{
+              opacity: 1, y: 0,
+              x: [0, 8, 0, -8, 0],
+              translateY: [0, -6, 0, 6, 0],
+            }}
+            transition={{
+              opacity: { duration: 0.8, delay: 0.3 },
+              y: { duration: 0.8, delay: 0.3 },
+              x: { duration: 18, repeat: Infinity, ease: "easeInOut" },
+              translateY: { duration: 18, repeat: Infinity, ease: "easeInOut", delay: 4.5 },
+            }}
           >
             <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>photo</span>
           </motion.div>
@@ -276,8 +234,17 @@ function HeroPanel({
               zIndex: 2,
             }}
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            animate={{
+              opacity: 1, y: 0,
+              x: [0, -10, 0, 10, 0],
+              translateY: [0, 8, 0, -8, 0],
+            }}
+            transition={{
+              opacity: { duration: 0.8, delay: 0.4 },
+              y: { duration: 0.8, delay: 0.4 },
+              x: { duration: 22, repeat: Infinity, ease: "easeInOut" },
+              translateY: { duration: 22, repeat: Infinity, ease: "easeInOut", delay: 5.5 },
+            }}
           >
             <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(176,125,212,0.4)" }}>photo</span>
           </motion.div>
@@ -293,8 +260,17 @@ function HeroPanel({
               zIndex: 3,
             }}
             initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.55 }}
+            animate={{
+              opacity: 1, y: 0,
+              x: [0, 6, 0, -6, 0],
+              translateY: [0, -10, 0, 10, 0],
+            }}
+            transition={{
+              opacity: { duration: 0.8, delay: 0.55 },
+              y: { duration: 0.8, delay: 0.55 },
+              x: { duration: 16, repeat: Infinity, ease: "easeInOut" },
+              translateY: { duration: 16, repeat: Infinity, ease: "easeInOut", delay: 4 },
+            }}
           >
             <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(176,125,212,0.4)" }}>photo</span>
           </motion.div>
@@ -336,7 +312,7 @@ function HeroPanel({
           </p>
         </motion.div>
 
-        {/* Second gallery cluster — scattered */}
+        {/* Second gallery cluster — scattered, floating */}
         <div style={{ position: "relative", height: "38vh", margin: "0 1rem 2rem" }}>
           {/* Lavender — left, tilted */}
           <motion.div
@@ -350,8 +326,17 @@ function HeroPanel({
               zIndex: 1,
             }}
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            animate={{
+              opacity: 1, y: 0,
+              x: [0, -7, 0, 7, 0],
+              translateY: [0, 9, 0, -9, 0],
+            }}
+            transition={{
+              opacity: { duration: 0.8, delay: 0.2 },
+              y: { duration: 0.8, delay: 0.2 },
+              x: { duration: 20, repeat: Infinity, ease: "easeInOut" },
+              translateY: { duration: 20, repeat: Infinity, ease: "easeInOut", delay: 5 },
+            }}
           >
             <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(176,125,212,0.4)" }}>photo</span>
           </motion.div>
@@ -366,8 +351,17 @@ function HeroPanel({
               zIndex: 2,
             }}
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.35 }}
+            animate={{
+              opacity: 1, y: 0,
+              x: [0, 10, 0, -10, 0],
+              translateY: [0, -7, 0, 7, 0],
+            }}
+            transition={{
+              opacity: { duration: 0.8, delay: 0.35 },
+              y: { duration: 0.8, delay: 0.35 },
+              x: { duration: 17, repeat: Infinity, ease: "easeInOut" },
+              translateY: { duration: 17, repeat: Infinity, ease: "easeInOut", delay: 4.25 },
+            }}
           >
             <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>photo</span>
           </motion.div>
@@ -382,8 +376,17 @@ function HeroPanel({
               zIndex: 3,
             }}
             initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.45 }}
+            animate={{
+              opacity: 1, y: 0,
+              x: [0, -5, 0, 5, 0],
+              translateY: [0, 8, 0, -8, 0],
+            }}
+            transition={{
+              opacity: { duration: 0.8, delay: 0.45 },
+              y: { duration: 0.8, delay: 0.45 },
+              x: { duration: 14, repeat: Infinity, ease: "easeInOut" },
+              translateY: { duration: 14, repeat: Infinity, ease: "easeInOut", delay: 3.5 },
+            }}
           >
             <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>photo</span>
           </motion.div>
@@ -643,7 +646,6 @@ function ThirdPanel({ onTransition }: { onTransition: (destBg: string, href: str
 export default function AboutPage() {
   const heroRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const [nameVariant, setNameVariant] = useState<NameVariant>("d1");
   const [transition, setTransition] = useState<{ destBg: string; href: string; shattering: boolean } | null>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -674,43 +676,8 @@ export default function AboutPage() {
     }
   };
 
-  const nameVariants: NameVariant[] = ["d1", "d4", "d5"];
-  const nameLabels: Record<NameVariant, string> = {
-    d1: "Diagonal",
-    d4: "Cascade",
-    d5: "Inline",
-  };
-
   return (
     <div style={{ background: "#FAF6F2" }}>
-      {/* Variant toggles — top right */}
-      <div
-        className="fixed hidden sm:flex flex-col gap-2 z-50"
-        style={{ top: "1.5rem", right: "1.5rem" }}
-      >
-        <div className="flex gap-2">
-          {nameVariants.map((v) => (
-            <button
-              key={v}
-              onClick={() => setNameVariant(v)}
-              className="font-sans"
-              style={{
-                fontSize: "0.55rem",
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                padding: "0.4rem 0.75rem",
-                cursor: "pointer",
-                border: `1px solid ${nameVariant === v ? "#4C191B" : "rgba(76,25,27,0.2)"}`,
-                background: nameVariant === v ? "#4C191B" : "rgba(250,246,242,0.9)",
-                color: nameVariant === v ? "#FAF6F2" : "#4C191B",
-                transition: "all 0.2s ease",
-              }}
-            >
-              {nameLabels[v]}
-            </button>
-          ))}
-        </div>
-      </div>
 
       {/* Hero scroll wrapper — auto height on mobile, fixed on desktop */}
       <div
@@ -718,7 +685,7 @@ export default function AboutPage() {
         className="sm:h-[115vh]"
         style={{ backgroundColor: "#FAF6F2" }}
       >
-        <HeroPanel scrollYProgress={scrollYProgress} nameVariant={nameVariant} />
+        <HeroPanel scrollYProgress={scrollYProgress} />
       </div>
 
       {/* Typography scroll wrapper */}
