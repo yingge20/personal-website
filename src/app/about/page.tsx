@@ -246,29 +246,58 @@ function HeroPanel({
           </motion.div>
         </div>
 
-        {/* First row of photos */}
-        <div style={{ display: "flex", gap: "0.75rem", padding: "1rem 1.5rem", justifyContent: "center" }}>
-          {[photos[0], photos[2]].map((photo, i) => (
-            <div
-              key={`top-${i}`}
-              className="flex items-center justify-center font-sans"
-              style={{
-                width: i === 0 ? "38vw" : "42vw",
-                height: i === 0 ? "28vh" : "32vh",
-                backgroundColor: photo.bg,
-                ...(photo.border ? { border: "1px solid rgba(176,125,212,0.2)" } : {}),
-              }}
-            >
-              <span style={{
-                fontSize: "0.5rem",
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                color: photo.bg === "#963D5A" ? "rgba(255,255,255,0.4)" : "rgba(176,125,212,0.4)",
-              }}>
-                photo
-              </span>
-            </div>
-          ))}
+        {/* First gallery cluster — overlapping, scattered */}
+        <div style={{ position: "relative", height: "42vh", margin: "0 1rem" }}>
+          {/* Large berry — back left */}
+          <motion.div
+            className="absolute flex items-center justify-center font-sans"
+            style={{
+              width: "52vw", height: "34vh",
+              top: "2vh", left: "2vw",
+              backgroundColor: "#963D5A",
+              rotate: "-2deg",
+              zIndex: 1,
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>photo</span>
+          </motion.div>
+          {/* Lavender — overlapping right, higher */}
+          <motion.div
+            className="absolute flex items-center justify-center font-sans"
+            style={{
+              width: "42vw", height: "26vh",
+              top: "0", right: "0vw",
+              backgroundColor: "#E3DAFF",
+              border: "1px solid rgba(176,125,212,0.2)",
+              rotate: "1.5deg",
+              zIndex: 2,
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(176,125,212,0.4)" }}>photo</span>
+          </motion.div>
+          {/* Small lavender — peeking bottom right */}
+          <motion.div
+            className="absolute flex items-center justify-center font-sans"
+            style={{
+              width: "30vw", height: "16vh",
+              bottom: "-2vh", right: "8vw",
+              backgroundColor: "#E3DAFF",
+              border: "1px solid rgba(176,125,212,0.2)",
+              rotate: "-1deg",
+              zIndex: 3,
+            }}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.55 }}
+          >
+            <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(176,125,212,0.4)" }}>photo</span>
+          </motion.div>
         </div>
 
         {/* Bio text — centered */}
@@ -307,29 +336,57 @@ function HeroPanel({
           </p>
         </motion.div>
 
-        {/* Second row of photos */}
-        <div style={{ display: "flex", gap: "0.75rem", padding: "0 1.5rem 2rem", justifyContent: "center" }}>
-          {[photos[5], photos[6]].map((photo, i) => (
-            <div
-              key={`bot-${i}`}
-              className="flex items-center justify-center font-sans"
-              style={{
-                width: i === 0 ? "42vw" : "34vw",
-                height: i === 0 ? "28vh" : "22vh",
-                backgroundColor: photo.bg,
-                ...(photo.border ? { border: "1px solid rgba(176,125,212,0.2)" } : {}),
-              }}
-            >
-              <span style={{
-                fontSize: "0.5rem",
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                color: photo.bg === "#B07DD4" ? "rgba(255,255,255,0.4)" : "rgba(176,125,212,0.4)",
-              }}>
-                photo
-              </span>
-            </div>
-          ))}
+        {/* Second gallery cluster — scattered */}
+        <div style={{ position: "relative", height: "38vh", margin: "0 1rem 2rem" }}>
+          {/* Lavender — left, tilted */}
+          <motion.div
+            className="absolute flex items-center justify-center font-sans"
+            style={{
+              width: "44vw", height: "30vh",
+              top: "0", left: "0vw",
+              backgroundColor: "#E3DAFF",
+              border: "1px solid rgba(176,125,212,0.2)",
+              rotate: "2deg",
+              zIndex: 1,
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(176,125,212,0.4)" }}>photo</span>
+          </motion.div>
+          {/* Violet — overlapping right, lower */}
+          <motion.div
+            className="absolute flex items-center justify-center font-sans"
+            style={{
+              width: "38vw", height: "28vh",
+              top: "6vh", right: "2vw",
+              backgroundColor: "#B07DD4",
+              rotate: "-1.5deg",
+              zIndex: 2,
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.35 }}
+          >
+            <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>photo</span>
+          </motion.div>
+          {/* Small berry accent — peeking top right */}
+          <motion.div
+            className="absolute flex items-center justify-center font-sans"
+            style={{
+              width: "24vw", height: "14vh",
+              top: "-2vh", right: "10vw",
+              backgroundColor: "#963D5A",
+              rotate: "3deg",
+              zIndex: 3,
+            }}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.45 }}
+          >
+            <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>photo</span>
+          </motion.div>
         </div>
       </div>
     </>
