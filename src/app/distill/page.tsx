@@ -148,8 +148,9 @@ function FloatingCard({
       contextColor: "rgba(250,246,242,0.75)",
       tagColor: "#963D5A",
       cardRotate: "-1deg",
-      // Card 1: shifted right of center
-      offset: { marginLeft: "clamp(6rem, 14vw, 14rem)", marginRight: "auto" },
+      // Card 1: shifted right of center (desktop only)
+      offset: {},
+      offsetClass: "mx-auto sm:ml-[clamp(6rem,14vw,14rem)] sm:mr-auto",
       // Context sits outside card, only edge overlapping
       contextPos: {
         bottom: "-6rem",
@@ -164,8 +165,9 @@ function FloatingCard({
       contextColor: "rgba(250,246,242,0.8)",
       tagColor: "#B07DD4",
       cardRotate: "0.8deg",
-      // Card 2: slightly right of center, close to center
-      offset: { marginLeft: "auto", marginRight: "clamp(6rem, 14vw, 16rem)" },
+      // Card 2: shifted left of center (desktop only)
+      offset: {},
+      offsetClass: "mx-auto sm:mr-[clamp(6rem,14vw,16rem)] sm:ml-auto",
       // Context 1/3 down the card, left side, mostly outside
       contextPos: {
         top: "30%",
@@ -180,11 +182,10 @@ function FloatingCard({
   return (
     <div
       ref={ref}
-      className="relative px-4 sm:px-6"
+      className={`relative px-4 sm:px-6 ${s.offsetClass}`}
       style={{
         maxWidth: 820,
         width: "100%",
-        ...s.offset,
       }}
     >
       {/* Card with springy parallax */}
@@ -326,7 +327,7 @@ export default function DistillPage() {
   const monogramColor = "#4C191B";
 
   return (
-    <div>
+    <div style={{ overflowX: "hidden" }}>
       {/* Header */}
       <header
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-8 md:px-12"

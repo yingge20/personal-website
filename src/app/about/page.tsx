@@ -1,79 +1,132 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Monogram } from "@/components/monogram";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
-/* ── Floating photo gallery — matching concept 2F positions ── */
-const photos = [
-  { top: "6vh",  right: "28vw", w: "16vw", h: "22vh", bg: "#E3DAFF", border: true, hideOnMobile: false },
-  { top: "4vh",  right: "6vw",  w: "14vw", h: "18vh", bg: "#E3DAFF", border: true, hideOnMobile: true },
-  { top: "16vh", left: "22vw",  w: "18vw", h: "28vh", bg: "#963D5A", border: false, hideOnMobile: false },
-  { top: "38vh", left: "18vw",  w: "14vw", h: "20vh", bg: "#E3DAFF", border: true, hideOnMobile: true },
-  { top: "30vh", right: "5vw",  w: "13vw", h: "18vh", bg: "#E3DAFF", border: true, hideOnMobile: true },
-  { top: "50vh", right: "15vw", w: "16vw", h: "24vh", bg: "#E3DAFF", border: true, hideOnMobile: false },
-  { top: "72vh", right: "5vw",  w: "12vw", h: "18vh", bg: "#B07DD4", border: false, hideOnMobile: true },
+/* ── Floating photo gallery ── */
+interface GalleryPhoto {
+  top: string;
+  right?: string;
+  left?: string;
+  w: string;
+  h: string;
+  src?: string;
+  video?: string;
+  hideOnMobile: boolean;
+  objectPos?: string;
+  filter?: string;
+  z?: number;
+}
+
+/* Option A: "Warm Orbit" — plum/terracotta/gold, brand-aligned
+   Layout: asymmetric overlapping clusters like Radiance.
+   Left cluster: portrait (hero) + courtyard + bubble, tight overlap.
+   Right cluster: purple (large) overlapping with spoon sculpture + wire network.
+   Lantern floats lower-right. */
+const photosA: GalleryPhoto[] = [
+  // ── Left arc: shifted left to clear text ──
+  // Portrait — HERO anchor (capped so it doesn't overflow on ultrawide)
+  { top: "6vh",  left: "15%",  w: "min(22vw, 340px)", h: "36vh", src: "/portrait.jpg", objectPos: "center 20%", hideOnMobile: false, z: 3 },
+  // Courtyard — warm pair with portrait, slight overlap on left edge
+  { top: "24vh", left: "4%",   w: "min(12vw, 185px)", h: "26vh", src: "/IMG_0005 4.jpeg", objectPos: "center 60%", hideOnMobile: false, z: 4 },
+  // Bubble — FLOATS solo, whitespace gap from pair
+  { top: "50vh", left: "18%",  w: "min(11vw, 170px)", h: "13vh", video: "/bubble.mp4", hideOnMobile: true, z: 5 },
+  // ── Right arc of circular frame ──
+  // Purple — top-right arc anchor
+  { top: "8vh",  right: "5%",  w: "min(18vw, 280px)", h: "28vh", src: "/purple-installation.jpg", hideOnMobile: false, z: 3 },
+  // Wire — BIGGER, touches purple's bottom-left (dark pair), shows texture
+  { top: "24vh", right: "16%", w: "min(16vw, 245px)", h: "14vh", src: "/wire-network.jpg", hideOnMobile: true, z: 4 },
+  // Lantern — lower-right arc, warm accent balances warm left side
+  { top: "54vh", right: "12%", w: "min(11vw, 170px)", h: "13vh", video: "/lantern.mp4", hideOnMobile: false, z: 5 },
+  // Spoon — right arc, pulled further in from edge
+  { top: "42vh", right: "4%",  w: "min(9vw, 140px)",  h: "36vh", src: "/IMG_5727.jpeg", objectPos: "center center", hideOnMobile: true, filter: "brightness(0.85) contrast(1.05)", z: 4 },
 ];
 
-function PhotoPlaceholder({
+
+/* Single gallery item — enters with stagger, no independent float */
+function GalleryItem({
   photo,
   index,
-  scrollYProgress,
 }: {
-  photo: (typeof photos)[number];
+  photo: GalleryPhoto;
   index: number;
-  scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
 }) {
-  const rate = 8 + (index % 4) * 6;
-  const rawY = useTransform(scrollYProgress, [0, 1], [-rate, rate]);
-  const y = useSpring(rawY, { stiffness: 40, damping: 30 });
-
   const posStyle: React.CSSProperties = {
     top: photo.top,
     width: photo.w,
     height: photo.h,
-    backgroundColor: photo.bg,
     ...(photo.right ? { right: photo.right } : {}),
     ...(photo.left ? { left: photo.left } : {}),
-    ...(photo.border ? { border: "1px solid rgba(176,125,212,0.2)" } : {}),
   };
-
-  const isDark = photo.bg === "#963D5A" || photo.bg === "#B07DD4";
-
-  // Slow circular float — each photo has different duration and radius
-  const floatDuration = 14 + (index % 4) * 5; // 14-29s per orbit
-  const floatRadius = 14 + (index % 3) * 8; // 14-30px radius
 
   return (
     <motion.div
-      className={`absolute flex items-center justify-center font-sans select-none pointer-events-none ${photo.hideOnMobile ? "hidden sm:flex" : ""}`}
-      style={{ ...posStyle, zIndex: 3, y }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{
-        opacity: 1,
-        y: 0,
-        x: [0, floatRadius, 0, -floatRadius, 0],
-        translateY: [0, -floatRadius, 0, floatRadius, 0],
-      }}
+      className={`absolute overflow-hidden select-none pointer-events-none ${photo.hideOnMobile ? "hidden sm:block" : ""}`}
+      style={{ ...posStyle, zIndex: photo.z ?? 3 }}
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{
-        opacity: { delay: 0.2 + index * 0.08, duration: 0.9, ease: [0.16, 1, 0.3, 1] },
-        y: { delay: 0.2 + index * 0.08, duration: 0.9, ease: [0.16, 1, 0.3, 1] },
-        x: { duration: floatDuration, repeat: Infinity, ease: "easeInOut" },
-        translateY: { duration: floatDuration, repeat: Infinity, ease: "easeInOut", delay: floatDuration / 4 },
+        opacity: { delay: 0.2 + index * 0.1, duration: 1.0, ease: [0.16, 1, 0.3, 1] },
+        y: { delay: 0.2 + index * 0.1, duration: 1.0, ease: [0.16, 1, 0.3, 1] },
       }}
     >
-      <span
-        style={{
-          fontSize: "0.55rem",
-          letterSpacing: "0.15em",
-          textTransform: "uppercase",
-          color: isDark ? "rgba(255,255,255,0.4)" : "rgba(176,125,212,0.4)",
-        }}
-      >
-        photo
-      </span>
+      {photo.video ? (
+        <video
+          src={photo.video}
+          autoPlay
+          muted
+          loop
+          playsInline
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      ) : (
+        <img
+          src={photo.src}
+          alt=""
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: photo.objectPos || "center",
+            ...(photo.filter ? { filter: photo.filter } : {}),
+          }}
+        />
+      )}
+    </motion.div>
+  );
+}
+
+/* Coordinated orbital wrapper — all images move together as one unit */
+function GalleryOrbit({
+  photos,
+  scrollYProgress,
+}: {
+  photos: GalleryPhoto[];
+  scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
+}) {
+  const rawY = useTransform(scrollYProgress, [0, 1], [-12, 12]);
+  const y = useSpring(rawY, { stiffness: 40, damping: 30 });
+
+  return (
+    <motion.div
+      className="absolute inset-0"
+      style={{ y }}
+      animate={{
+        x: [0, 18, 0, -18, 0],
+        translateY: [0, -14, 0, 14, 0],
+        rotate: [0, 0.4, 0, -0.4, 0],
+      }}
+      transition={{
+        x: { duration: 24, repeat: Infinity, ease: "easeInOut" },
+        translateY: { duration: 24, repeat: Infinity, ease: "easeInOut", delay: 6 },
+        rotate: { duration: 24, repeat: Infinity, ease: "easeInOut", delay: 3 },
+      }}
+    >
+      {photos.map((photo, i) => (
+        <GalleryItem key={i} photo={photo} index={i} />
+      ))}
     </motion.div>
   );
 }
@@ -102,6 +155,7 @@ function HeroPanel({
 }: {
   scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
 }) {
+
   return (
     <>
       {/* Desktop layout — original */}
@@ -109,62 +163,59 @@ function HeroPanel({
         className="sticky top-0 h-screen overflow-hidden hidden sm:block"
         style={{ backgroundColor: "#FAF6F2", zIndex: 1 }}
       >
-        <div className="absolute z-10" style={{ top: "1.5rem", left: "1.5rem" }}>
-          <Monogram color="#4C191B" />
+        {/* Max-width container keeps composition tight on ultrawide */}
+        <div className="relative h-full mx-auto" style={{ maxWidth: "min(100%, 2200px)" }}>
+          <div className="absolute z-10" style={{ top: "1.5rem", left: "1.5rem" }}>
+            <Monogram color="#4C191B" />
+          </div>
+
+          <GalleryOrbit photos={photosA} scrollYProgress={scrollYProgress} />
+
+          <NameTypography />
+
+          <motion.div
+            className="absolute z-10"
+            style={{
+              top: "30%",
+              left: "42%",
+              transform: "translate(-50%, -50%)",
+              textAlign: "center",
+              maxWidth: "clamp(260px, 26vw, 400px)",
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <span
+              className="font-sans block mb-5"
+              style={{
+                fontSize: "0.75rem",
+                letterSpacing: "0.35em",
+                textTransform: "uppercase",
+                color: "rgba(76,25,27,0.55)",
+                fontWeight: 400,
+              }}
+            >
+              Product &middot; Builder
+            </span>
+            <p
+              className="font-sans"
+              style={{
+                fontSize: "clamp(1rem, 1.6vw, 1.3rem)",
+                color: "#2A1520",
+                lineHeight: 1.8,
+                fontWeight: 300,
+              }}
+            >
+              I design systems that shape behavior, not just generate answers.{" "}
+              My work sits at the intersection of{" "}
+              <strong style={{ color: "#2A1520", fontWeight: 500 }}>
+                AI, decision-making, and human experience
+              </strong>
+              .
+            </p>
+          </motion.div>
         </div>
-
-        {photos.map((photo, i) => (
-          <PhotoPlaceholder
-            key={i}
-            photo={photo}
-            index={i}
-            scrollYProgress={scrollYProgress}
-          />
-        ))}
-
-        <NameTypography />
-
-        <motion.div
-          className="absolute z-10"
-          style={{
-            top: "35%",
-            left: "44%",
-            transform: "translate(-50%, -50%)",
-            textAlign: "center",
-            maxWidth: "clamp(260px, 26vw, 400px)",
-          }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <span
-            className="font-sans block mb-5"
-            style={{
-              fontSize: "0.75rem",
-              letterSpacing: "0.35em",
-              textTransform: "uppercase",
-              color: "rgba(76,25,27,0.55)",
-              fontWeight: 400,
-            }}
-          >
-            Product &middot; Builder
-          </span>
-          <p
-            className="font-sans"
-            style={{
-              fontSize: "clamp(1rem, 1.6vw, 1.3rem)",
-              color: "#2A1520",
-              lineHeight: 1.8,
-              fontWeight: 300,
-            }}
-          >
-            I design systems that shape behavior, not just generate answers. At the intersection of{" "}
-            <strong style={{ color: "#2A1520", fontWeight: 500 }}>
-              AI, decision-making, and human experience
-            </strong>
-            .
-          </p>
-        </motion.div>
       </div>
 
       {/* Mobile layout — stacked vertically */}
@@ -195,200 +246,103 @@ function HeroPanel({
           <span style={{ color: "#4C191B" }}>Ge</span>
         </motion.div>
 
-        {/* First gallery cluster — overlapping, scattered, floating */}
-        <div style={{ position: "relative", height: "42vh", margin: "0 1rem" }}>
-          {/* Large berry — back left */}
+        {/* Orbital gallery cluster — circular arrangement around bio text */}
+        <div style={{ position: "relative", height: "72vh", margin: "0" }}>
+          {/* Portrait — large, top-left arc, rounded */}
           <motion.div
-            className="absolute flex items-center justify-center font-sans"
-            style={{
-              width: "52vw", height: "34vh",
-              top: "2vh", left: "2vw",
-              backgroundColor: "#963D5A",
-              rotate: "-2deg",
-              zIndex: 1,
-            }}
+            className="absolute overflow-hidden"
+            style={{ width: "52vw", height: "34vh", top: "0", left: "2vw", borderRadius: "0 40% 4px 4px", zIndex: 2 }}
             initial={{ opacity: 0, y: 20 }}
-            animate={{
-              opacity: 1, y: 0,
-              x: [0, 8, 0, -8, 0],
-              translateY: [0, -6, 0, 6, 0],
-            }}
+            animate={{ opacity: 1, y: 0, x: [0, 5, 0, -5, 0], translateY: [0, -4, 0, 4, 0] }}
             transition={{
-              opacity: { duration: 0.8, delay: 0.3 },
-              y: { duration: 0.8, delay: 0.3 },
-              x: { duration: 18, repeat: Infinity, ease: "easeInOut" },
-              translateY: { duration: 18, repeat: Infinity, ease: "easeInOut", delay: 4.5 },
-            }}
-          >
-            <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>photo</span>
-          </motion.div>
-          {/* Lavender — overlapping right, higher */}
-          <motion.div
-            className="absolute flex items-center justify-center font-sans"
-            style={{
-              width: "42vw", height: "26vh",
-              top: "0", right: "0vw",
-              backgroundColor: "#E3DAFF",
-              border: "1px solid rgba(176,125,212,0.2)",
-              rotate: "1.5deg",
-              zIndex: 2,
-            }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{
-              opacity: 1, y: 0,
-              x: [0, -10, 0, 10, 0],
-              translateY: [0, 8, 0, -8, 0],
-            }}
-            transition={{
-              opacity: { duration: 0.8, delay: 0.4 },
-              y: { duration: 0.8, delay: 0.4 },
+              opacity: { duration: 0.8, delay: 0.3 }, y: { duration: 0.8, delay: 0.3 },
               x: { duration: 22, repeat: Infinity, ease: "easeInOut" },
               translateY: { duration: 22, repeat: Infinity, ease: "easeInOut", delay: 5.5 },
             }}
           >
-            <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(176,125,212,0.4)" }}>photo</span>
+            <img src="/portrait.jpg" alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 20%" }} />
           </motion.div>
-          {/* Small lavender — peeking bottom right */}
-          <motion.div
-            className="absolute flex items-center justify-center font-sans"
-            style={{
-              width: "30vw", height: "16vh",
-              bottom: "-2vh", right: "8vw",
-              backgroundColor: "#E3DAFF",
-              border: "1px solid rgba(176,125,212,0.2)",
-              rotate: "-1deg",
-              zIndex: 3,
-            }}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{
-              opacity: 1, y: 0,
-              x: [0, 6, 0, -6, 0],
-              translateY: [0, -10, 0, 10, 0],
-            }}
-            transition={{
-              opacity: { duration: 0.8, delay: 0.55 },
-              y: { duration: 0.8, delay: 0.55 },
-              x: { duration: 16, repeat: Infinity, ease: "easeInOut" },
-              translateY: { duration: 16, repeat: Infinity, ease: "easeInOut", delay: 4 },
-            }}
-          >
-            <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(176,125,212,0.4)" }}>photo</span>
-          </motion.div>
-        </div>
 
-        {/* Bio text — centered */}
-        <motion.div
-          style={{ padding: "2.5rem 2rem", textAlign: "center" }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <span
-            className="font-sans block mb-4"
-            style={{
-              fontSize: "0.7rem",
-              letterSpacing: "0.35em",
-              textTransform: "uppercase",
-              color: "rgba(76,25,27,0.55)",
-              fontWeight: 400,
+          {/* Purple installation — top-right arc, rounded circle-ish */}
+          <motion.div
+            className="absolute overflow-hidden"
+            style={{ width: "38vw", height: "22vh", top: "2vh", right: "3vw", borderRadius: "40% 4px 40% 4px", zIndex: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0, x: [0, -6, 0, 6, 0], translateY: [0, 5, 0, -5, 0] }}
+            transition={{
+              opacity: { duration: 0.8, delay: 0.45 }, y: { duration: 0.8, delay: 0.45 },
+              x: { duration: 19, repeat: Infinity, ease: "easeInOut" },
+              translateY: { duration: 19, repeat: Infinity, ease: "easeInOut", delay: 4.75 },
             }}
           >
-            Product &middot; Builder
-          </span>
-          <p
-            className="font-sans"
-            style={{
-              fontSize: "1.1rem",
-              color: "#2A1520",
-              lineHeight: 1.8,
-              fontWeight: 300,
-            }}
-          >
-            I design systems that shape behavior, not just generate answers. At the intersection of{" "}
-            <strong style={{ color: "#2A1520", fontWeight: 500 }}>
-              AI, decision-making, and human experience
-            </strong>
-            .
-          </p>
-        </motion.div>
+            <img src="/purple-installation.jpg" alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          </motion.div>
 
-        {/* Second gallery cluster — scattered, floating */}
-        <div style={{ position: "relative", height: "38vh", margin: "0 1rem 2rem" }}>
-          {/* Lavender — left, tilted */}
+          {/* Bio text — centered in the composition */}
           <motion.div
-            className="absolute flex items-center justify-center font-sans"
-            style={{
-              width: "44vw", height: "30vh",
-              top: "0", left: "0vw",
-              backgroundColor: "#E3DAFF",
-              border: "1px solid rgba(176,125,212,0.2)",
-              rotate: "2deg",
-              zIndex: 1,
-            }}
+            className="absolute"
+            style={{ top: "36vh", left: "0", right: "0", padding: "0 2rem", textAlign: "center", zIndex: 3 }}
             initial={{ opacity: 0, y: 20 }}
-            animate={{
-              opacity: 1, y: 0,
-              x: [0, -7, 0, 7, 0],
-              translateY: [0, 9, 0, -9, 0],
-            }}
-            transition={{
-              opacity: { duration: 0.8, delay: 0.2 },
-              y: { duration: 0.8, delay: 0.2 },
-              x: { duration: 20, repeat: Infinity, ease: "easeInOut" },
-              translateY: { duration: 20, repeat: Infinity, ease: "easeInOut", delay: 5 },
-            }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
-            <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(176,125,212,0.4)" }}>photo</span>
+            <span
+              className="font-sans block mb-3"
+              style={{
+                fontSize: "0.7rem",
+                letterSpacing: "0.35em",
+                textTransform: "uppercase",
+                color: "rgba(76,25,27,0.55)",
+                fontWeight: 400,
+              }}
+            >
+              Product &middot; Builder
+            </span>
+            <p
+              className="font-sans"
+              style={{
+                fontSize: "1.05rem",
+                color: "#2A1520",
+                lineHeight: 1.7,
+                fontWeight: 300,
+              }}
+            >
+              I design systems that shape behavior, not just generate answers. My work sits at the intersection of{" "}
+              <strong style={{ color: "#2A1520", fontWeight: 500 }}>
+                AI, decision-making, and human experience
+              </strong>
+              .
+            </p>
           </motion.div>
-          {/* Violet — overlapping right, lower */}
+
+          {/* Lantern video — bottom-right arc, rounded */}
           <motion.div
-            className="absolute flex items-center justify-center font-sans"
-            style={{
-              width: "38vw", height: "28vh",
-              top: "6vh", right: "2vw",
-              backgroundColor: "#B07DD4",
-              rotate: "-1.5deg",
-              zIndex: 2,
-            }}
+            className="absolute overflow-hidden"
+            style={{ width: "42vw", height: "18vh", bottom: "0", right: "4vw", borderRadius: "4px 30% 4px 40%", zIndex: 2 }}
             initial={{ opacity: 0, y: 20 }}
-            animate={{
-              opacity: 1, y: 0,
-              x: [0, 10, 0, -10, 0],
-              translateY: [0, -7, 0, 7, 0],
-            }}
+            animate={{ opacity: 1, y: 0, x: [0, 7, 0, -7, 0], translateY: [0, -5, 0, 5, 0] }}
             transition={{
-              opacity: { duration: 0.8, delay: 0.35 },
-              y: { duration: 0.8, delay: 0.35 },
-              x: { duration: 17, repeat: Infinity, ease: "easeInOut" },
-              translateY: { duration: 17, repeat: Infinity, ease: "easeInOut", delay: 4.25 },
+              opacity: { duration: 0.8, delay: 0.6 }, y: { duration: 0.8, delay: 0.6 },
+              x: { duration: 18, repeat: Infinity, ease: "easeInOut" },
+              translateY: { duration: 18, repeat: Infinity, ease: "easeInOut", delay: 4.5 },
             }}
           >
-            <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>photo</span>
+            <video src="/lantern.mp4" autoPlay muted loop playsInline style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </motion.div>
-          {/* Small berry accent — peeking top right */}
+
+          {/* Bubble video — bottom-left arc, circle */}
           <motion.div
-            className="absolute flex items-center justify-center font-sans"
-            style={{
-              width: "24vw", height: "14vh",
-              top: "-2vh", right: "10vw",
-              backgroundColor: "#963D5A",
-              rotate: "3deg",
-              zIndex: 3,
-            }}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{
-              opacity: 1, y: 0,
-              x: [0, -5, 0, 5, 0],
-              translateY: [0, 8, 0, -8, 0],
-            }}
+            className="absolute overflow-hidden"
+            style={{ width: "28vw", height: "28vw", bottom: "2vh", left: "4vw", borderRadius: "50%", zIndex: 3 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1, x: [0, -5, 0, 5, 0], translateY: [0, 6, 0, -6, 0] }}
             transition={{
-              opacity: { duration: 0.8, delay: 0.45 },
-              y: { duration: 0.8, delay: 0.45 },
-              x: { duration: 14, repeat: Infinity, ease: "easeInOut" },
-              translateY: { duration: 14, repeat: Infinity, ease: "easeInOut", delay: 3.5 },
+              opacity: { duration: 0.8, delay: 0.55 }, scale: { duration: 0.8, delay: 0.55 },
+              x: { duration: 21, repeat: Infinity, ease: "easeInOut" },
+              translateY: { duration: 21, repeat: Infinity, ease: "easeInOut", delay: 5.25 },
             }}
           >
-            <span style={{ fontSize: "0.5rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)" }}>photo</span>
+            <video src="/bubble.mp4" autoPlay muted loop playsInline style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </motion.div>
         </div>
       </div>
@@ -413,60 +367,116 @@ function TypographyPanel() {
   const p2Opacity = useTransform(scrollYProgress, [0.05, 0.35, 0.65, 0.82], [0, 1, 1, 0]);
 
   return (
-    <div
-      ref={ref}
-      className="sticky top-0 h-screen overflow-hidden"
-      style={{ backgroundColor: "#B07DD4", zIndex: 2 }}
-    >
-      {/* First paragraph — flies in from left via scroll, exits left */}
-      <motion.p
-        className="absolute font-display uppercase left-6 sm:left-[6vw] right-6 sm:right-auto sm:max-w-[45vw]"
-        style={{
-          top: "15vh",
-          fontWeight: 800,
-          fontSize: "clamp(1.3rem, 3vw, 3.8rem)",
-          lineHeight: 1.15,
-          letterSpacing: "-0.02em",
-          color: "#2A1520",
-          x: p1X,
-          opacity: p1Opacity,
-        }}
+    <>
+      {/* Desktop — sticky with scroll-driven animation */}
+      <div
+        ref={ref}
+        className="sticky top-0 h-screen overflow-hidden hidden sm:block"
+        style={{ backgroundColor: "#B07DD4", zIndex: 2 }}
       >
-        I&apos;m interested in how systems think, how they fail, and how to make them more consistent, reliable, and aligned with real-world complexity.
-      </motion.p>
+        <motion.p
+          className="absolute font-display uppercase left-[6vw] max-w-[45vw]"
+          style={{
+            top: "15vh",
+            fontWeight: 800,
+            fontSize: "clamp(1.3rem, 3vw, 3.8rem)",
+            lineHeight: 1.15,
+            letterSpacing: "-0.02em",
+            color: "#2A1520",
+            x: p1X,
+            opacity: p1Opacity,
+          }}
+        >
+          I&apos;m interested in how systems think, how they fail, and how to make them more consistent, reliable, and aligned with real-world complexity.
+        </motion.p>
 
-      {/* Second paragraph — flies in from bottom via scroll, exits right */}
-      <motion.p
-        className="absolute font-display uppercase right-6 sm:right-[6vw] left-6 sm:left-auto sm:text-right sm:max-w-[40vw]"
-        style={{
-          bottom: "18vh",
-          fontWeight: 400,
-          fontSize: "clamp(0.95rem, 1.8vw, 2.2rem)",
-          lineHeight: 1.35,
-          letterSpacing: "0.03em",
-          color: "#4C191B",
-          x: p2X,
-          y: p2Y,
-          opacity: p2Opacity,
-        }}
+        <motion.p
+          className="absolute font-display uppercase right-[6vw] text-right max-w-[40vw]"
+          style={{
+            bottom: "18vh",
+            fontWeight: 400,
+            fontSize: "clamp(0.95rem, 1.8vw, 2.2rem)",
+            lineHeight: 1.35,
+            letterSpacing: "0.03em",
+            color: "#4C191B",
+            x: p2X,
+            y: p2Y,
+            opacity: p2Opacity,
+          }}
+        >
+          My background spans finance, accounting, technology, and{" "}
+          <span style={{ color: "#FAF6F2", fontWeight: 900 }}>AI</span>, shaping
+          how I build:{" "}
+          <span style={{ borderBottom: "0.15em solid #FAF6F2", paddingBottom: "0.05em" }}>
+            structured
+          </span>
+          ,{" "}
+          <span style={{ borderBottom: "0.15em solid #FAF6F2", paddingBottom: "0.05em" }}>
+            detail-aware
+          </span>
+          , and{" "}
+          <span style={{ borderBottom: "0.15em solid #FAF6F2", paddingBottom: "0.05em" }}>
+            grounded
+          </span>{" "}
+          in how things actually&nbsp;work.
+        </motion.p>
+      </div>
+
+      {/* Mobile — static layout, no scroll animation */}
+      <div
+        className="block sm:hidden flex flex-col justify-center px-6 py-16"
+        style={{ backgroundColor: "#B07DD4", zIndex: 2, minHeight: "85vh" }}
       >
-        My background spans finance, accounting, technology, and{" "}
-        <span style={{ color: "#FAF6F2", fontWeight: 900 }}>AI</span>, shaping
-        how I build:{" "}
-        <span style={{ borderBottom: "0.15em solid #FAF6F2", paddingBottom: "0.05em" }}>
-          structured
-        </span>
-        ,{" "}
-        <span style={{ borderBottom: "0.15em solid #FAF6F2", paddingBottom: "0.05em" }}>
-          detail-aware
-        </span>
-        , and{" "}
-        <span style={{ borderBottom: "0.15em solid #FAF6F2", paddingBottom: "0.05em" }}>
-          grounded
-        </span>{" "}
-        in how things actually&nbsp;work.
-      </motion.p>
-    </div>
+        <motion.p
+          className="font-display uppercase"
+          style={{
+            fontWeight: 800,
+            fontSize: "1.5rem",
+            lineHeight: 1.15,
+            letterSpacing: "-0.02em",
+            color: "#2A1520",
+            marginBottom: "2.5rem",
+          }}
+          initial={{ opacity: 0, x: -40 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        >
+          I&apos;m interested in how systems think, how they fail, and how to make them more consistent, reliable, and aligned with real-world complexity.
+        </motion.p>
+
+        <motion.p
+          className="font-display uppercase"
+          style={{
+            fontWeight: 400,
+            fontSize: "1.05rem",
+            lineHeight: 1.4,
+            letterSpacing: "0.03em",
+            color: "#4C191B",
+          }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
+          transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+        >
+          My background spans finance, accounting, technology, and{" "}
+          <span style={{ color: "#FAF6F2", fontWeight: 900 }}>AI</span>, shaping
+          how I build:{" "}
+          <span style={{ borderBottom: "0.15em solid #FAF6F2", paddingBottom: "0.05em" }}>
+            structured
+          </span>
+          ,{" "}
+          <span style={{ borderBottom: "0.15em solid #FAF6F2", paddingBottom: "0.05em" }}>
+            detail-aware
+          </span>
+          , and{" "}
+          <span style={{ borderBottom: "0.15em solid #FAF6F2", paddingBottom: "0.05em" }}>
+            grounded
+          </span>{" "}
+          in how things actually&nbsp;work.
+        </motion.p>
+      </div>
+    </>
   );
 }
 
@@ -689,7 +699,7 @@ export default function AboutPage() {
       </div>
 
       {/* Typography scroll wrapper */}
-      <div className="h-[100vh] sm:h-[160vh]" style={{ backgroundColor: "#B07DD4" }}>
+      <div className="h-auto sm:h-[160vh]" style={{ backgroundColor: "#B07DD4" }}>
         <TypographyPanel />
       </div>
 
