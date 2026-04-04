@@ -93,19 +93,6 @@ function RevealLine({
   const isInView = useInView(ref, { once: true, margin: "-10% 0px" });
 
   if (line.type === "break") return <div style={{ height: "1.6rem" }} />;
-  if (line.type === "divider")
-    return (
-      <motion.div
-        ref={ref}
-        className="flex justify-center"
-        initial={{ opacity: 0 }}
-        animate={isInView ? { opacity: 0.4 } : {}}
-        transition={{ duration: 0.8, delay: index * 0.04 }}
-        style={{ margin: "0.5rem 0" }}
-      >
-        <div style={{ width: 36, height: 1, background: "#B07DD4" }} />
-      </motion.div>
-    );
 
   return (
     <motion.div
