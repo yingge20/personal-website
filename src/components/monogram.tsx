@@ -1,14 +1,10 @@
-import Link from "next/link";
-
 export function Monogram({
   color = "#4C191B",
-  href = "/home",
 }: {
   color?: string;
-  href?: string;
 }) {
   return (
-    <Link href={href} className="flex items-baseline no-underline">
+    <div className="flex items-baseline">
       <span
         className="font-display"
         style={{
@@ -42,6 +38,6 @@ export function Monogram({
       >
         G
       </span>
-    </Link>
+    </div>
   );
 }

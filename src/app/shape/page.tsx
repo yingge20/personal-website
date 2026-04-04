@@ -394,7 +394,7 @@ function IPhoneChat() {
         <div
           ref={chatContainerRef}
           style={{
-            padding: "0.6rem 0.85rem 1rem",
+            padding: "0.6rem 0.85rem 2rem",
             height: 640,
             overflowY: "auto",
             scrollbarWidth: "none",
@@ -579,7 +579,7 @@ function IPhoneNudge() {
         {/* Chat area */}
         <div
           style={{
-            padding: "0.6rem 0.85rem 1rem",
+            padding: "0.6rem 0.85rem 2rem",
             height: 640,
           }}
         >
@@ -905,7 +905,7 @@ export default function ShapePage() {
       </header>
 
       {/* Title section — lavender background */}
-      <div style={{ paddingTop: "120px", paddingBottom: "4rem", background: "#E3DAFF" }}>
+      <div style={{ paddingTop: "120px", paddingBottom: "2rem", background: "#E3DAFF" }}>
         <div className="px-6 sm:px-12 md:px-20">
           <h1
             className="font-display uppercase"
@@ -929,9 +929,8 @@ export default function ShapePage() {
               maxWidth: "50ch",
             }}
           >
-            Systems I design to guide behavior and decisions.
-            Not automation — orchestration. Each project is a living system
-            that shapes how I think, move, and operate.
+            Systems that guide reflection and behavior over time.
+            Designed for becoming, not just doing.
           </p>
         </div>
       </div>
@@ -940,11 +939,11 @@ export default function ShapePage() {
       <div
         style={{
           background: "#E3DAFF",
-          padding: "clamp(4rem, 8vw, 6rem) 1.5rem clamp(6rem, 10vw, 10rem)",
+          padding: "clamp(2rem, 4vw, 3rem) 1.5rem clamp(6rem, 10vw, 10rem)",
         }}
       >
         {/* Project title */}
-        <div className="text-center" style={{ marginBottom: "clamp(3rem, 6vw, 5rem)" }}>
+        <div className="text-center" style={{ marginBottom: "clamp(2rem, 4vw, 3.5rem)" }}>
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -988,7 +987,7 @@ export default function ShapePage() {
               fontSize: "clamp(1.2rem, 2.2vw, 1.6rem)",
               fontWeight: 300,
               fontStyle: "italic",
-              lineHeight: 1.7,
+              lineHeight: 1.4,
               color: "#5C4555",
               maxWidth: "32ch",
               margin: "0 auto",
@@ -998,16 +997,71 @@ export default function ShapePage() {
             <br />
             not just what I do.
           </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.4 }}
+            className="font-sans"
+            style={{
+              fontSize: "clamp(0.85rem, 1.2vw, 1rem)",
+              fontWeight: 300,
+              lineHeight: 1.8,
+              color: "#4C191B",
+              maxWidth: "42ch",
+              margin: "1rem auto 0",
+            }}
+          >
+            It captures moments from the day and helps turn them into something usable.
+          </motion.p>
         </div>
 
         {/* Scene 1 — Reflection */}
         <IPhoneChat />
+
+        {/* Scene 1 caption */}
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="font-sans text-center"
+          style={{
+            fontSize: "clamp(0.95rem, 1.4vw, 1.15rem)",
+            fontWeight: 400,
+            lineHeight: 1.7,
+            color: "#5C4555",
+            maxWidth: "42ch",
+            margin: "clamp(2rem, 4vw, 3rem) auto 0",
+          }}
+        >
+          I start with a rough signal. The system helps me distill it.
+        </motion.p>
 
         {/* Spacer */}
         <div style={{ height: "clamp(5rem, 10vw, 8rem)" }} />
 
         {/* Scene 2 — Nudge */}
         <IPhoneNudge />
+
+        {/* Scene 2 caption */}
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="font-sans text-center"
+          style={{
+            fontSize: "clamp(0.95rem, 1.4vw, 1.15rem)",
+            fontWeight: 400,
+            lineHeight: 1.7,
+            color: "#5C4555",
+            maxWidth: "42ch",
+            margin: "clamp(2rem, 4vw, 3rem) auto 0",
+          }}
+        >
+          A daily nudge that turns willpower into an enduring system.
+        </motion.p>
 
       </div>
 

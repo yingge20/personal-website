@@ -16,14 +16,14 @@ export function LinkedInFooter() {
           fontWeight: 400,
           letterSpacing: "0.2em",
           textTransform: "uppercase" as const,
-          color: "rgba(76,25,27,0.7)",
+          color: "rgba(76,25,27,0.85)",
           transition: "color 0.3s ease",
         }}
         onMouseEnter={(e) =>
-          (e.currentTarget.style.color = "rgba(76,25,27,0.9)")
+          (e.currentTarget.style.color = "rgba(76,25,27,1)")
         }
         onMouseLeave={(e) =>
-          (e.currentTarget.style.color = "rgba(76,25,27,0.4)")
+          (e.currentTarget.style.color = "rgba(76,25,27,0.85)")
         }
       >
         LinkedIn

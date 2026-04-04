@@ -9,28 +9,35 @@ import { useRef } from "react";
 const entries = [
   {
     num: "01",
-    tag: "Decision System",
+    tag: "Decision vs. Sampling",
     context:
       "From building an accounting knowledge Q\u0026A system, I learned that the same question, asked twice, can produce different reasoning paths. The answer might match, but the logic behind it shifts. That inconsistency undermines reliability. The fix was giving the model the right structure to reason within.",
     lines: [
-      { text: "Ask the model same question twice.", type: "normal" as const },
-      { text: "You may get the same answer.", type: "normal" as const },
-      { text: "", type: "break" as const },
-      { text: "But not the same reasoning.", type: "normal" as const },
+      { text: "Ask the same question twice.", type: "normal" as const },
+      { text: "You may get the same answer", type: "normal" as const },
+      { text: "but not the same reasoning.", type: "normal" as const },
       { text: "", type: "break" as const },
       { text: "That\u2019s not a decision system.", type: "normal" as const },
       { text: "That\u2019s a sampling system.", type: "normal" as const },
       { text: "", type: "break" as const },
-      { text: "\u2014", type: "divider" as const },
+      { text: "If the reasoning shifts each time,", type: "normal" as const },
+      { text: "you don\u2019t have a system you can rely on.", type: "normal" as const },
+      { text: "You have something that sounds right.", type: "normal" as const },
       { text: "", type: "break" as const },
-      { text: "A decision system is defined", type: "normal" as const },
-      { text: "by how knowledge is used.", type: "normal" as const },
+      { text: "That's the difference.", type: "normal" as const },
       { text: "", type: "break" as const },
-      { text: "Without structure,", type: "normal" as const },
-      { text: "it samples.", type: "italic" as const },
+      { text: "The model encodes statistical patterns,", type: "normal" as const },
+      { text: "not a consistent decision process.", type: "normal" as const },
       { text: "", type: "break" as const },
-      { text: "With structure,", type: "normal" as const },
-      { text: "it decides.", type: "italic" as const },
+      { text: "A decision system isn\u2019t defined by what it knows.", type: "normal" as const },
+      { text: "", type: "break" as const },
+      { text: "It\u2019s defined by:", type: "normal" as const },
+      { text: "how it evaluates inputs", type: "normal" as const },
+      { text: "what it prioritizes", type: "normal" as const },
+      { text: "how it reaches a conclusion", type: "normal" as const },
+      { text: "", type: "break" as const },
+      { text: "Without structure, knowledge is sampled.", type: "italic" as const },
+      { text: "With structure, knowledge is applied.", type: "italic" as const },
     ],
   },
   {
@@ -52,7 +59,7 @@ const entries = [
       { text: "Let it answer.", type: "normal" as const },
       { text: "Then question again.", type: "normal" as const },
       { text: "", type: "break" as const },
-      { text: "Not to lead\u2014", type: "normal" as const },
+      { text: "Not to lead,", type: "normal" as const },
       { text: "but to apply pressure.", type: "normal" as const },
       { text: "", type: "break" as const },
       { text: "Surface assumptions.", type: "normal" as const },
@@ -154,7 +161,7 @@ function FloatingCard({
       // Context sits outside card, only edge overlapping
       contextPos: {
         bottom: "-6rem",
-        right: "-8rem",
+        right: "-16rem",
       },
       contextRotate: "1.5deg",
     },
@@ -170,7 +177,7 @@ function FloatingCard({
       offsetClass: "mx-auto sm:mr-[clamp(6rem,14vw,16rem)] sm:ml-auto",
       // Context 1/3 down the card, left side, mostly outside
       contextPos: {
-        top: "30%",
+        top: "15%",
         left: "-14rem",
       },
       contextRotate: "-1.2deg",
@@ -304,8 +311,7 @@ function CardsVariant() {
           }}
         >
           Insights and patterns uncovered through building AI systems.
-          Each piece captures a moment where something clicked — a principle
-          that emerged from practice, not theory.
+          Each piece captures a principle that emerged from practice, not theory.
         </p>
       </div>
 
