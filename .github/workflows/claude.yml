@@ -23,12 +23,20 @@ jobs:
       pull-requests: read
       issues: read
       id-token: write
-      actions: read # Required for Claude to read CI results on PRs
+      actions: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Run Claude Code
         id: claude
@@ -36,15 +44,69 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
-          # This is an optional setting that allows Claude to read CI results on PRs
           additional_permissions: |
             actions: read
 
-          # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
-          # prompt: 'Update the pull request description to include a summary of changes.'
+          custom_instructions: |
+            # Project context
+            This is a Next.js 16 personal website (personal-website / ying-ge-site).
+            Project design rules: see @CLAUDE.md
+            Auto-fix tier policy: see @docs/auto-fix-tiers.md
 
-          # Optional: Add claude_args to customize behavior and configuration
-          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://code.claude.com/docs/en/cli-reference for available options
-          # claude_args: '--allowed-tools Bash(gh pr:*)'
+            # Scope discipline
+            Only modify files directly related to the request. Do not touch sibling
+            components, pages, or shared utilities unless explicitly asked. If a fix
+            would require changes outside the obvious scope, stop and leave a PR
+            comment describing what's needed and why.
 
+            # Blocked files (never modify in remote mode)
+            Never modify these — if a change seems to require touching one, stop and
+            leave a PR comment describing what you would do and why. Do not edit:
+            - .github/** (workflows, actions, dependabot, etc.)
+            - .env*, *.pem, *.key, credentials*.json
+            - package.json, package-lock.json, pnpm-lock.yaml, yarn.lock, bun.lockb
+            - next.config.*, tsconfig.json, tailwind.config.*, vercel.json
+            - .eslintrc*, eslint.config.*, .prettierrc*, prettier.config.*
+            - .gitignore, .gitattributes
+            - CLAUDE.md, docs/auto-fix-tiers.md, docs/design-system.md
+            - LICENSE*
+
+            # Auto-fix discipline
+            Follow docs/auto-fix-tiers.md strictly. Never use --no-verify, `any`
+            casts, --force, or disable rules to silence errors. Fix the root cause.
+
+            # Build verification
+            After making code changes, run `npm run build` to verify the project
+            still builds. If it fails, fix the error before committing. If the fix
+            would require editing a blocked file, stop and comment instead.
+
+            # Visual verification (when relevant)
+            For UI changes, use the Playwright MCP server to capture screenshots at
+            these viewports and attach them to the PR:
+            - 402x874 (iPhone 17)
+            - 1440x900 (desktop)
+            - 2560x1080 (ultrawide)
+            Check: no horizontal scroll, no text clipping, touch targets >=44px on
+            mobile. Save screenshots to ./screenshots/ in the PR.
+
+            # Commit discipline
+            - Commit messages: 1-2 sentences explaining why (not just what)
+            - Stage files explicitly by name (never `git add .` or `git add -A`)
+            - Include the standard co-author trailer
+            - Never force-push, reset --hard, or delete branches
+
+          mcp_config: |
+            {
+              "mcpServers": {
+                "playwright": {
+                  "command": "npx",
+                  "args": [
+                    "@playwright/mcp@latest",
+                    "--headless",
+                    "--isolated"
+                  ]
+                }
+              }
+            }
+
+          claude_args: '--allowed-tools Bash(npm:*),Bash(npx:*),Bash(git:*),Bash(ls:*),Bash(cat:*),Bash(mkdir:*),mcp__playwright__browser_navigate,mcp__playwright__browser_snapshot,mcp__playwright__browser_take_screenshot,mcp__playwright__browser_resize,mcp__playwright__browser_evaluate,mcp__playwright__browser_close'
